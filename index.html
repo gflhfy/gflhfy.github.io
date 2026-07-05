@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GFL HFY Ebooks</title>
+    <link rel="stylesheet" href="src/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./">GFL HFY</a>
+      <div class="toolbar">
+        <button id="libraryButton" type="button" title="Library">Library</button>
+        <button id="prevButton" type="button" title="Previous page">Prev</button>
+        <button id="nextButton" type="button" title="Next page">Next</button>
+      </div>
+    </header>
+
+    <main>
+      <section id="libraryView" class="library-view" aria-label="Library">
+        <div class="page-head">
+          <h1>Books</h1>
+          <p>Published manuscripts for browser reading.</p>
+        </div>
+        <div id="bookGrid" class="book-grid"></div>
+      </section>
+
+      <section id="readerView" class="reader-view" aria-label="Reader" hidden>
+        <aside class="book-panel">
+          <img id="bookCover" class="book-cover" alt="">
+          <h1 id="bookTitle"></h1>
+          <p id="bookSubtitle"></p>
+          <p id="bookDescription"></p>
+          <a id="youtubeLink" class="youtube-link" href="#" target="_blank" rel="noreferrer" hidden>Listen on YouTube</a>
+          <nav id="toc" class="toc" aria-label="Table of contents"></nav>
+        </aside>
+        <section class="reading-shell">
+          <div id="readerStatus" class="reader-status">Loading...</div>
+          <div id="viewer" class="viewer"></div>
+        </section>
+      </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
+

@@ -1,0 +1,15 @@
+﻿{
+    "generatedAt":  "2026-07-05T21:58:19Z",
+    "books":  [
+                  {
+                      "slug":  "patagonia-lights",
+                      "title":  "The Lights Over Trapalanda",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "A UAP investigator follows a missing hiker case into the Patagonia legend of Trapalanda, the lost City of the Caesars.",
+                      "cover":  "public/books/patagonia-lights/cover.png",
+                      "epub":  "public/books/patagonia-lights/book.epub",
+                      "manifest":  "public/books/patagonia-lights/manifest.json"
+                  }
+              ]
+}
