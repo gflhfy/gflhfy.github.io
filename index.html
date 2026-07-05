@@ -10,6 +10,36 @@
     <header class="topbar">
       <a class="brand" href="./">GFL HFY</a>
       <div class="toolbar">
+        <div class="toolbar-settings-wrap">
+          <button
+            id="settingsButton"
+            type="button"
+            class="toolbar-icon-btn"
+            aria-expanded="false"
+            aria-controls="settingsPanel"
+            title="Reader settings"
+          >⚙</button>
+          <div id="settingsPanel" class="settings-panel" hidden>
+            <h2 class="settings-title">Reader settings</h2>
+            <div class="settings-group">
+              <span class="settings-label">Font size</span>
+              <div class="settings-row">
+                <button id="fontSmallerButton" type="button" class="settings-step-btn" title="Smaller text">A−</button>
+                <span id="fontSizeLabel" class="settings-value">100%</span>
+                <button id="fontLargerButton" type="button" class="settings-step-btn" title="Larger text">A+</button>
+              </div>
+            </div>
+            <div class="settings-group">
+              <span class="settings-label">Theme</span>
+              <div class="settings-segments" role="group" aria-label="Reader theme">
+                <button type="button" data-theme="light">Light</button>
+                <button type="button" data-theme="dark">Dark</button>
+              </div>
+            </div>
+            <p id="settingsProgress" class="settings-progress">Open a book to see progress.</p>
+            <p class="settings-hint">← → turn pages · + − change font size</p>
+          </div>
+        </div>
         <button id="libraryButton" type="button" title="Library">Library</button>
         <button id="prevButton" type="button" title="Previous page">Prev</button>
         <button id="nextButton" type="button" title="Next page">Next</button>
