@@ -118,6 +118,13 @@ function isMobileSettingsLayout() {
   return window.matchMedia("(max-width: 760px)").matches;
 }
 
+function syncReaderChromeLayout() {
+  if (!topbarEl) return;
+  const height = Math.round(topbarEl.getBoundingClientRect().height);
+  document.documentElement.style.setProperty("--topbar-height", `${height}px`);
+  if (activeRendition) activeRendition.resize();
+}
+
 function syncSettingsPanelPosition() {
   if (!settingsOpen || !isMobileSettingsLayout()) {
     document.documentElement.style.removeProperty("--settings-panel-top");
@@ -341,6 +348,7 @@ async function renderEpub(slug, manifest) {
   activeToc = navigation.toc || [];
   renderToc(activeToc);
   updateProgressLabel(lastLocation);
+  syncReaderChromeLayout();
 }
 
 function renderToc(items) {
@@ -458,10 +466,11 @@ els.prevButton.addEventListener("click", () => activeRendition && activeRenditio
 els.nextButton.addEventListener("click", () => activeRendition && activeRendition.next());
 window.addEventListener("hashchange", route);
 window.addEventListener("resize", () => {
-  if (activeRendition) activeRendition.resize();
+  syncReaderChromeLayout();
   syncSettingsPanelPosition();
 });
 
 applyShellTheme(readerSettings.theme);
 syncSettingsPanelUi();
+syncReaderChromeLayout();
 route();
