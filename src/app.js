@@ -43,6 +43,9 @@ let activeToc = [];
 let lastLocation = null;
 let readerSettings = loadReaderSettings();
 let settingsOpen = false;
+let settingsOutsideIgnoreUntil = 0;
+
+const topbarEl = document.querySelector(".topbar");
 
 const els = {
   libraryView: document.getElementById("libraryView"),
@@ -50,6 +53,7 @@ const els = {
   bookGrid: document.getElementById("bookGrid"),
   settingsButton: document.getElementById("settingsButton"),
   settingsPanel: document.getElementById("settingsPanel"),
+  settingsBackdrop: document.getElementById("settingsBackdrop"),
   fontSmallerButton: document.getElementById("fontSmallerButton"),
   fontLargerButton: document.getElementById("fontLargerButton"),
   fontSizeLabel: document.getElementById("fontSizeLabel"),
@@ -105,10 +109,34 @@ function syncSettingsPanelUi() {
   }
 }
 
+function isMobileSettingsLayout() {
+  return window.matchMedia("(max-width: 760px)").matches;
+}
+
+function syncSettingsPanelPosition() {
+  if (!settingsOpen || !isMobileSettingsLayout()) {
+    document.documentElement.style.removeProperty("--settings-panel-top");
+    return;
+  }
+  const rect = els.settingsButton.getBoundingClientRect();
+  const top = Math.max(12, Math.round(rect.bottom + 8));
+  document.documentElement.style.setProperty("--settings-panel-top", `${top}px`);
+}
+
 function setSettingsPanelOpen(open) {
   settingsOpen = open;
   els.settingsPanel.hidden = !open;
+  const showBackdrop = open && isMobileSettingsLayout();
+  els.settingsBackdrop.hidden = !showBackdrop;
+  els.settingsBackdrop.setAttribute("aria-hidden", showBackdrop ? "false" : "true");
   els.settingsButton.setAttribute("aria-expanded", open ? "true" : "false");
+  if (topbarEl) topbarEl.classList.toggle("settings-open", open);
+  if (open) {
+    settingsOutsideIgnoreUntil = Date.now() + 350;
+    syncSettingsPanelPosition();
+  } else {
+    document.documentElement.style.removeProperty("--settings-panel-top");
+  }
 }
 
 function registerEpubThemes(rendition) {
@@ -353,7 +381,12 @@ function isEditableTarget(target) {
 
 els.settingsButton.addEventListener("click", event => {
   event.stopPropagation();
+  event.preventDefault();
   setSettingsPanelOpen(!settingsOpen);
+});
+
+els.settingsBackdrop.addEventListener("click", () => {
+  setSettingsPanelOpen(false);
 });
 
 els.fontSmallerButton.addEventListener("click", () => stepFontSize(-1));
@@ -366,7 +399,8 @@ for (const button of els.themeButtons) {
 }
 
 document.addEventListener("click", event => {
-  if (!settingsOpen) return;
+  if (!settingsOpen || isMobileSettingsLayout()) return;
+  if (Date.now() < settingsOutsideIgnoreUntil) return;
   if (event.target instanceof Node && els.settingsPanel.contains(event.target)) return;
   if (event.target instanceof Node && els.settingsButton.contains(event.target)) return;
   setSettingsPanelOpen(false);
