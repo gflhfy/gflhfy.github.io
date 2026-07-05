@@ -1,16 +1,6 @@
 ﻿{
-    "generatedAt":  "2026-07-05T22:10:56Z",
+    "generatedAt":  "2026-07-05T22:11:54Z",
     "books":  [
-                  {
-                      "slug":  "dandelion-mirror",
-                      "title":  "The Dandelion Mirror",
-                      "subtitle":  "A GFL HFY read-aloud story",
-                      "author":  "GFL HFY",
-                      "description":  "Book: The Dandelion Mirror",
-                      "cover":  "public/books/dandelion-mirror/cover.png",
-                      "epub":  "public/books/dandelion-mirror/book.epub",
-                      "manifest":  "public/books/dandelion-mirror/manifest.json"
-                  },
                   {
                       "slug":  "patagonia-lights",
                       "title":  "The Lights Over Trapalanda",
@@ -20,6 +10,16 @@
                       "cover":  "public/books/patagonia-lights/cover.png",
                       "epub":  "public/books/patagonia-lights/book.epub",
                       "manifest":  "public/books/patagonia-lights/manifest.json"
+                  },
+                  {
+                      "slug":  "dandelion-mirror",
+                      "title":  "The Dandelion Mirror",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Book: The Dandelion Mirror",
+                      "cover":  "public/books/dandelion-mirror/cover.png",
+                      "epub":  "public/books/dandelion-mirror/book.epub",
+                      "manifest":  "public/books/dandelion-mirror/manifest.json"
                   }
               ]
 }
