@@ -78,3 +78,15 @@ http://localhost:8080/
 
 The reader uses epub.js from a CDN. No build step is required.
 
+## GitHub Pages
+
+Live site: [https://gflhfy.github.io/](https://gflhfy.github.io/) from [gflhfy/gflhfy.github.io](https://github.com/gflhfy/gflhfy.github.io).
+
+**Publish ebook** on the dashboard also deploys the static site when GitHub is reachable. If you are offline, local publish still completes and GitHub upload is skipped.
+
+Manual deploy from the repository root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File ebooks/scripts/Deploy-GitHubPages.ps1 -Json
+```
+
