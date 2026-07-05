@@ -44,6 +44,11 @@ let lastLocation = null;
 let readerSettings = loadReaderSettings();
 let settingsOpen = false;
 let settingsOutsideIgnoreUntil = 0;
+let settingsIgnoreClickUntil = 0;
+
+function toggleSettingsPanel() {
+  setSettingsPanelOpen(!settingsOpen);
+}
 
 const topbarEl = document.querySelector(".topbar");
 
@@ -127,8 +132,10 @@ function setSettingsPanelOpen(open) {
   settingsOpen = open;
   els.settingsPanel.hidden = !open;
   const showBackdrop = open && isMobileSettingsLayout();
-  els.settingsBackdrop.hidden = !showBackdrop;
-  els.settingsBackdrop.setAttribute("aria-hidden", showBackdrop ? "false" : "true");
+  if (els.settingsBackdrop) {
+    els.settingsBackdrop.hidden = !showBackdrop;
+    els.settingsBackdrop.setAttribute("aria-hidden", showBackdrop ? "false" : "true");
+  }
   els.settingsButton.setAttribute("aria-expanded", open ? "true" : "false");
   if (topbarEl) topbarEl.classList.toggle("settings-open", open);
   if (open) {
@@ -379,15 +386,28 @@ function isEditableTarget(target) {
   return tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable;
 }
 
+els.settingsButton.addEventListener("touchend", event => {
+  event.preventDefault();
+  event.stopPropagation();
+  settingsIgnoreClickUntil = Date.now() + 500;
+  toggleSettingsPanel();
+}, { passive: false });
+
 els.settingsButton.addEventListener("click", event => {
   event.stopPropagation();
-  event.preventDefault();
-  setSettingsPanelOpen(!settingsOpen);
+  if (Date.now() < settingsIgnoreClickUntil) return;
+  toggleSettingsPanel();
 });
 
-els.settingsBackdrop.addEventListener("click", () => {
-  setSettingsPanelOpen(false);
-});
+if (els.settingsBackdrop) {
+  const closeSettingsFromBackdrop = event => {
+    event.preventDefault();
+    event.stopPropagation();
+    setSettingsPanelOpen(false);
+  };
+  els.settingsBackdrop.addEventListener("touchend", closeSettingsFromBackdrop, { passive: false });
+  els.settingsBackdrop.addEventListener("click", closeSettingsFromBackdrop);
+}
 
 els.fontSmallerButton.addEventListener("click", () => stepFontSize(-1));
 els.fontLargerButton.addEventListener("click", () => stepFontSize(1));
@@ -437,7 +457,10 @@ els.libraryButton.addEventListener("click", showLibrary);
 els.prevButton.addEventListener("click", () => activeRendition && activeRendition.prev());
 els.nextButton.addEventListener("click", () => activeRendition && activeRendition.next());
 window.addEventListener("hashchange", route);
-window.addEventListener("resize", () => activeRendition && activeRendition.resize());
+window.addEventListener("resize", () => {
+  if (activeRendition) activeRendition.resize();
+  syncSettingsPanelPosition();
+});
 
 applyShellTheme(readerSettings.theme);
 syncSettingsPanelUi();

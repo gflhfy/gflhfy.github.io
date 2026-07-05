@@ -54,6 +54,32 @@ a {
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(10px);
   overflow: visible;
+  touch-action: manipulation;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .topbar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: var(--panel);
+    isolation: isolate;
+  }
+
+  .toolbar-settings-wrap {
+    position: relative;
+    z-index: 2;
+  }
+
+  .toolbar-icon-btn {
+    min-width: 48px;
+    min-height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .toolbar button {
+    touch-action: manipulation;
+  }
 }
 
 .topbar.settings-open {
