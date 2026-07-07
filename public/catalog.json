@@ -1,15 +1,25 @@
 ﻿{
-    "generatedAt":  "2026-07-05T22:11:54Z",
+    "generatedAt":  "2026-07-07T17:16:15Z",
     "books":  [
                   {
                       "slug":  "patagonia-lights",
                       "title":  "The Lights Over Trapalanda",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
-                      "description":  "A UAP investigator follows a missing hiker case into the Patagonia legend of Trapalanda, the lost City of the Caesars.",
+                      "description":  null,
                       "cover":  "public/books/patagonia-lights/cover.png",
                       "epub":  "public/books/patagonia-lights/book.epub",
                       "manifest":  "public/books/patagonia-lights/manifest.json"
+                  },
+                  {
+                      "slug":  "mira-keen-1",
+                      "title":  "Mira Keen: Pathways of Presence",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
+                      "cover":  "public/books/mira-keen-1/cover.png",
+                      "epub":  "public/books/mira-keen-1/book.epub",
+                      "manifest":  "public/books/mira-keen-1/manifest.json"
                   },
                   {
                       "slug":  "dandelion-mirror",
