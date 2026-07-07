@@ -1,6 +1,16 @@
 ﻿{
-    "generatedAt":  "2026-07-07T17:17:44Z",
+    "generatedAt":  "2026-07-07T17:43:27Z",
     "books":  [
+                  {
+                      "slug":  "mira-keen-1",
+                      "title":  "Mira Keen: Pathways of Presence",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
+                      "cover":  "public/books/mira-keen-1/cover.png",
+                      "epub":  "public/books/mira-keen-1/book.epub",
+                      "manifest":  "public/books/mira-keen-1/manifest.json"
+                  },
                   {
                       "slug":  "patagonia-lights",
                       "title":  "The Lights Over Trapalanda",
@@ -12,6 +22,16 @@
                       "manifest":  "public/books/patagonia-lights/manifest.json"
                   },
                   {
+                      "slug":  "crystal-cave",
+                      "title":  "Crystal Cave",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Shelia Parks finds a hidden crystal door in Colorado. It opens onto a Hema colony under twin suns — and her way home is not the whole story.",
+                      "cover":  "public/books/crystal-cave/cover.png",
+                      "epub":  "public/books/crystal-cave/book.epub",
+                      "manifest":  "public/books/crystal-cave/manifest.json"
+                  },
+                  {
                       "slug":  "dandelion-mirror",
                       "title":  "The Dandelion Mirror",
                       "subtitle":  "A GFL HFY read-aloud story",
@@ -20,16 +40,6 @@
                       "cover":  "public/books/dandelion-mirror/cover.png",
                       "epub":  "public/books/dandelion-mirror/book.epub",
                       "manifest":  "public/books/dandelion-mirror/manifest.json"
-                  },
-                  {
-                      "slug":  "mira-keen-1",
-                      "title":  "Mira Keen: Pathways of Presence",
-                      "subtitle":  "A GFL HFY read-aloud story",
-                      "author":  "GFL HFY",
-                      "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
-                      "cover":  "public/books/mira-keen-1/cover.png",
-                      "epub":  "public/books/mira-keen-1/book.epub",
-                      "manifest":  "public/books/mira-keen-1/manifest.json"
                   }
               ]
 }
