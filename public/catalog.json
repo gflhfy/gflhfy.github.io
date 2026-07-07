@@ -1,5 +1,5 @@
 ﻿{
-    "generatedAt":  "2026-07-07T17:43:27Z",
+    "generatedAt":  "2026-07-07T17:46:11Z",
     "books":  [
                   {
                       "slug":  "mira-keen-1",
@@ -22,16 +22,6 @@
                       "manifest":  "public/books/patagonia-lights/manifest.json"
                   },
                   {
-                      "slug":  "crystal-cave",
-                      "title":  "Crystal Cave",
-                      "subtitle":  "A GFL HFY read-aloud story",
-                      "author":  "GFL HFY",
-                      "description":  "Shelia Parks finds a hidden crystal door in Colorado. It opens onto a Hema colony under twin suns — and her way home is not the whole story.",
-                      "cover":  "public/books/crystal-cave/cover.png",
-                      "epub":  "public/books/crystal-cave/book.epub",
-                      "manifest":  "public/books/crystal-cave/manifest.json"
-                  },
-                  {
                       "slug":  "dandelion-mirror",
                       "title":  "The Dandelion Mirror",
                       "subtitle":  "A GFL HFY read-aloud story",
@@ -40,6 +30,26 @@
                       "cover":  "public/books/dandelion-mirror/cover.png",
                       "epub":  "public/books/dandelion-mirror/book.epub",
                       "manifest":  "public/books/dandelion-mirror/manifest.json"
+                  },
+                  {
+                      "slug":  "twins-1",
+                      "title":  "Twins",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Identical twin sisters Cheyenne and Cynthia share a Denver apartment — until the Shift splits Earth in two.",
+                      "cover":  "public/books/twins-1/cover.png",
+                      "epub":  "public/books/twins-1/book.epub",
+                      "manifest":  "public/books/twins-1/manifest.json"
+                  },
+                  {
+                      "slug":  "crystal-cave",
+                      "title":  "Crystal Cave",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Shelia Parks finds a hidden crystal door in Colorado. It opens onto a Hema colony under twin suns — and her way home is not the whole story.",
+                      "cover":  "public/books/crystal-cave/cover.png",
+                      "epub":  "public/books/crystal-cave/book.epub",
+                      "manifest":  "public/books/crystal-cave/manifest.json"
                   }
               ]
 }
