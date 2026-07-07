@@ -1,5 +1,5 @@
 ﻿{
-    "generatedAt":  "2026-07-07T17:46:11Z",
+    "generatedAt":  "2026-07-07T17:49:14Z",
     "books":  [
                   {
                       "slug":  "mira-keen-1",
@@ -22,16 +22,6 @@
                       "manifest":  "public/books/patagonia-lights/manifest.json"
                   },
                   {
-                      "slug":  "dandelion-mirror",
-                      "title":  "The Dandelion Mirror",
-                      "subtitle":  "A GFL HFY read-aloud story",
-                      "author":  "GFL HFY",
-                      "description":  "Book: The Dandelion Mirror",
-                      "cover":  "public/books/dandelion-mirror/cover.png",
-                      "epub":  "public/books/dandelion-mirror/book.epub",
-                      "manifest":  "public/books/dandelion-mirror/manifest.json"
-                  },
-                  {
                       "slug":  "twins-1",
                       "title":  "Twins",
                       "subtitle":  "A GFL HFY read-aloud story",
@@ -42,6 +32,16 @@
                       "manifest":  "public/books/twins-1/manifest.json"
                   },
                   {
+                      "slug":  "free-energy",
+                      "title":  "Free Energy",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "A lone inventor finally gets free energy working in his bus. Then the people who buried the truth come knocking.",
+                      "cover":  "public/books/free-energy/cover.png",
+                      "epub":  "public/books/free-energy/book.epub",
+                      "manifest":  "public/books/free-energy/manifest.json"
+                  },
+                  {
                       "slug":  "crystal-cave",
                       "title":  "Crystal Cave",
                       "subtitle":  "A GFL HFY read-aloud story",
@@ -50,6 +50,16 @@
                       "cover":  "public/books/crystal-cave/cover.png",
                       "epub":  "public/books/crystal-cave/book.epub",
                       "manifest":  "public/books/crystal-cave/manifest.json"
+                  },
+                  {
+                      "slug":  "dandelion-mirror",
+                      "title":  "The Dandelion Mirror",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Book: The Dandelion Mirror",
+                      "cover":  "public/books/dandelion-mirror/cover.png",
+                      "epub":  "public/books/dandelion-mirror/book.epub",
+                      "manifest":  "public/books/dandelion-mirror/manifest.json"
                   }
               ]
 }
