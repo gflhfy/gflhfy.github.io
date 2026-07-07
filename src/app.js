@@ -213,6 +213,20 @@ function bookUrl(slug, file) {
   return `${BOOKS_BASE}/${encodeURIComponent(slug)}/${file}`;
 }
 
+function normalizeYoutubeUrl(raw) {
+  const value = String(raw || "").trim();
+  if (!value || value === "#") {
+    return "";
+  }
+  if (/^https?:\/\//i.test(value)) {
+    return value;
+  }
+  if (/^(www\.)?(youtube\.com|youtu\.be)\//i.test(value)) {
+    return `https://${value.replace(/^\/+/, "")}`;
+  }
+  return "";
+}
+
 function setStatus(message) {
   els.readerStatus.textContent = message || "";
   els.readerStatus.hidden = !message;
@@ -300,10 +314,12 @@ function renderBookMetadata(slug, manifest) {
     els.bookCover.hidden = true;
   }
 
-  if (manifest.youtubeUrl) {
-    els.youtubeLink.href = manifest.youtubeUrl;
+  const youtubeUrl = normalizeYoutubeUrl(manifest.youtubeUrl);
+  if (youtubeUrl) {
+    els.youtubeLink.href = youtubeUrl;
     els.youtubeLink.hidden = false;
   } else {
+    els.youtubeLink.removeAttribute("href");
     els.youtubeLink.hidden = true;
   }
 }

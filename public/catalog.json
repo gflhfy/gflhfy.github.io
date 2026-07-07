@@ -1,6 +1,16 @@
 ﻿{
-    "generatedAt":  "2026-07-07T17:53:52Z",
+    "generatedAt":  "2026-07-07T18:40:40Z",
     "books":  [
+                  {
+                      "slug":  "starship-upgrade",
+                      "title":  "Starthip Upgrade",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "A silent craft lands in Elon\u0027s Starbase yard while he\u0027s up late on Diablo IV. Then Starship flies again—with hidden engines nobody can explain.",
+                      "cover":  "public/books/starship-upgrade/cover.png",
+                      "epub":  "public/books/starship-upgrade/book.epub",
+                      "manifest":  "public/books/starship-upgrade/manifest.json"
+                  },
                   {
                       "slug":  "patagonia-lights",
                       "title":  "The Lights Over Trapalanda",
@@ -10,16 +20,6 @@
                       "cover":  "public/books/patagonia-lights/cover.png",
                       "epub":  "public/books/patagonia-lights/book.epub",
                       "manifest":  "public/books/patagonia-lights/manifest.json"
-                  },
-                  {
-                      "slug":  "mira-keen-1",
-                      "title":  "Mira Keen: Pathways of Presence",
-                      "subtitle":  "A GFL HFY read-aloud story",
-                      "author":  "GFL HFY",
-                      "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
-                      "cover":  "public/books/mira-keen-1/cover.png",
-                      "epub":  "public/books/mira-keen-1/book.epub",
-                      "manifest":  "public/books/mira-keen-1/manifest.json"
                   },
                   {
                       "slug":  "twins-1",
@@ -42,6 +42,16 @@
                       "manifest":  "public/books/the-nine/manifest.json"
                   },
                   {
+                      "slug":  "dandelion-mirror",
+                      "title":  "The Dandelion Mirror",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Book: The Dandelion Mirror",
+                      "cover":  "public/books/dandelion-mirror/cover.png",
+                      "epub":  "public/books/dandelion-mirror/book.epub",
+                      "manifest":  "public/books/dandelion-mirror/manifest.json"
+                  },
+                  {
                       "slug":  "crystal-cave",
                       "title":  "Crystal Cave",
                       "subtitle":  "A GFL HFY read-aloud story",
@@ -52,14 +62,14 @@
                       "manifest":  "public/books/crystal-cave/manifest.json"
                   },
                   {
-                      "slug":  "starship-upgrade",
-                      "title":  "Starthip Upgrade",
+                      "slug":  "mira-keen-1",
+                      "title":  "Mira Keen: Pathways of Presence",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
-                      "description":  "A silent craft lands in Elon\u0027s Starbase yard while he\u0027s up late on Diablo IV. Then Starship flies again—with hidden engines nobody can explain.",
-                      "cover":  "public/books/starship-upgrade/cover.png",
-                      "epub":  "public/books/starship-upgrade/book.epub",
-                      "manifest":  "public/books/starship-upgrade/manifest.json"
+                      "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
+                      "cover":  "public/books/mira-keen-1/cover.png",
+                      "epub":  "public/books/mira-keen-1/book.epub",
+                      "manifest":  "public/books/mira-keen-1/manifest.json"
                   },
                   {
                       "slug":  "free-energy",
@@ -70,16 +80,6 @@
                       "cover":  "public/books/free-energy/cover.png",
                       "epub":  "public/books/free-energy/book.epub",
                       "manifest":  "public/books/free-energy/manifest.json"
-                  },
-                  {
-                      "slug":  "dandelion-mirror",
-                      "title":  "The Dandelion Mirror",
-                      "subtitle":  "A GFL HFY read-aloud story",
-                      "author":  "GFL HFY",
-                      "description":  "Book: The Dandelion Mirror",
-                      "cover":  "public/books/dandelion-mirror/cover.png",
-                      "epub":  "public/books/dandelion-mirror/book.epub",
-                      "manifest":  "public/books/dandelion-mirror/manifest.json"
                   }
               ]
 }

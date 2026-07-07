@@ -36,9 +36,11 @@ Example `manifest.json`:
   "description": "A UAP investigator follows a missing hiker case into the Patagonia legend of Trapalanda.",
   "cover": "cover.png",
   "epub": "book.epub",
-  "youtubeUrl": ""
+  "youtubeUrl": "https://www.youtube.com/watch?v=…"
 }
 ```
+
+`youtubeUrl` is filled from `youtube-upload.config.json` → `last_upload.url` when you **Publish ebook** (after a YouTube API upload, or if `last_upload` was set manually for recovery).
 
 ## Sync
 

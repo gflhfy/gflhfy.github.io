@@ -336,6 +336,11 @@ a {
   color: var(--accent-strong);
 }
 
+.youtube-link[hidden],
+.reader-view[hidden] {
+  display: none !important;
+}
+
 .toc {
   display: grid;
   gap: 4px;
