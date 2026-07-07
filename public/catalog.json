@@ -1,5 +1,5 @@
 ﻿{
-    "generatedAt":  "2026-07-07T17:16:15Z",
+    "generatedAt":  "2026-07-07T17:17:44Z",
     "books":  [
                   {
                       "slug":  "patagonia-lights",
@@ -12,16 +12,6 @@
                       "manifest":  "public/books/patagonia-lights/manifest.json"
                   },
                   {
-                      "slug":  "mira-keen-1",
-                      "title":  "Mira Keen: Pathways of Presence",
-                      "subtitle":  "A GFL HFY read-aloud story",
-                      "author":  "GFL HFY",
-                      "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
-                      "cover":  "public/books/mira-keen-1/cover.png",
-                      "epub":  "public/books/mira-keen-1/book.epub",
-                      "manifest":  "public/books/mira-keen-1/manifest.json"
-                  },
-                  {
                       "slug":  "dandelion-mirror",
                       "title":  "The Dandelion Mirror",
                       "subtitle":  "A GFL HFY read-aloud story",
@@ -30,6 +20,16 @@
                       "cover":  "public/books/dandelion-mirror/cover.png",
                       "epub":  "public/books/dandelion-mirror/book.epub",
                       "manifest":  "public/books/dandelion-mirror/manifest.json"
+                  },
+                  {
+                      "slug":  "mira-keen-1",
+                      "title":  "Mira Keen: Pathways of Presence",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
+                      "cover":  "public/books/mira-keen-1/cover.png",
+                      "epub":  "public/books/mira-keen-1/book.epub",
+                      "manifest":  "public/books/mira-keen-1/manifest.json"
                   }
               ]
 }
