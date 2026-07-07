@@ -1,5 +1,5 @@
 ﻿{
-    "generatedAt":  "2026-07-07T18:42:04Z",
+    "generatedAt":  "2026-07-07T21:10:04Z",
     "books":  [
                   {
                       "slug":  "starship-upgrade",
@@ -42,14 +42,14 @@
                       "manifest":  "public/books/the-nine/manifest.json"
                   },
                   {
-                      "slug":  "dandelion-mirror",
-                      "title":  "The Dandelion Mirror",
+                      "slug":  "mira-keen-1",
+                      "title":  "Mira Keen: Pathways of Presence",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
-                      "description":  "Book: The Dandelion Mirror",
-                      "cover":  "public/books/dandelion-mirror/cover.png",
-                      "epub":  "public/books/dandelion-mirror/book.epub",
-                      "manifest":  "public/books/dandelion-mirror/manifest.json"
+                      "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
+                      "cover":  "public/books/mira-keen-1/cover.png",
+                      "epub":  "public/books/mira-keen-1/book.epub",
+                      "manifest":  "public/books/mira-keen-1/manifest.json"
                   },
                   {
                       "slug":  "crystal-cave",
@@ -62,14 +62,14 @@
                       "manifest":  "public/books/crystal-cave/manifest.json"
                   },
                   {
-                      "slug":  "mira-keen-1",
-                      "title":  "Mira Keen: Pathways of Presence",
+                      "slug":  "mermaid-timeline",
+                      "title":  "Mermaid Timeline",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
-                      "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
-                      "cover":  "public/books/mira-keen-1/cover.png",
-                      "epub":  "public/books/mira-keen-1/book.epub",
-                      "manifest":  "public/books/mira-keen-1/manifest.json"
+                      "description":  "A Patagonia man follows an impossible heart desire through a coastal cave into a 5D Earth timeline where a radiant mermaid woman is waiting.",
+                      "cover":  "public/books/mermaid-timeline/cover.png",
+                      "epub":  "public/books/mermaid-timeline/book.epub",
+                      "manifest":  "public/books/mermaid-timeline/manifest.json"
                   },
                   {
                       "slug":  "free-energy",
@@ -80,6 +80,16 @@
                       "cover":  "public/books/free-energy/cover.png",
                       "epub":  "public/books/free-energy/book.epub",
                       "manifest":  "public/books/free-energy/manifest.json"
+                  },
+                  {
+                      "slug":  "dandelion-mirror",
+                      "title":  "The Dandelion Mirror",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Book: The Dandelion Mirror",
+                      "cover":  "public/books/dandelion-mirror/cover.png",
+                      "epub":  "public/books/dandelion-mirror/book.epub",
+                      "manifest":  "public/books/dandelion-mirror/manifest.json"
                   }
               ]
 }
