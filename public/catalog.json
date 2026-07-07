@@ -1,5 +1,5 @@
 ﻿{
-    "generatedAt":  "2026-07-07T18:41:19Z",
+    "generatedAt":  "2026-07-07T18:41:31Z",
     "books":  [
                   {
                       "slug":  "starship-upgrade",
@@ -16,7 +16,7 @@
                       "title":  "The Lights Over Trapalanda",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
-                      "description":  null,
+                      "description":  "A UAP investigator follows a missing hiker case into the Patagonia legend of Trapalanda, the lost City of the Caesars.",
                       "cover":  "public/books/patagonia-lights/cover.png",
                       "epub":  "public/books/patagonia-lights/book.epub",
                       "manifest":  "public/books/patagonia-lights/manifest.json"
