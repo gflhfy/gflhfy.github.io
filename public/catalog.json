@@ -1,5 +1,5 @@
 ﻿{
-    "generatedAt":  "2026-07-07T17:49:14Z",
+    "generatedAt":  "2026-07-07T17:51:30Z",
     "books":  [
                   {
                       "slug":  "mira-keen-1",
@@ -40,6 +40,16 @@
                       "cover":  "public/books/free-energy/cover.png",
                       "epub":  "public/books/free-energy/book.epub",
                       "manifest":  "public/books/free-energy/manifest.json"
+                  },
+                  {
+                      "slug":  "the-nine",
+                      "title":  "The Nine",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Book: The Nine",
+                      "cover":  "public/books/the-nine/cover.png",
+                      "epub":  "public/books/the-nine/book.epub",
+                      "manifest":  "public/books/the-nine/manifest.json"
                   },
                   {
                       "slug":  "crystal-cave",
