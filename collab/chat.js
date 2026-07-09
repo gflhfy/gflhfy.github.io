@@ -3,10 +3,9 @@
   const storageKey = "gflhfy-collab-chat-settings";
   const pollMs = 2500;
 
-  // Matches tools/book-locale/kokoro-languages.json
+  // Kokoro book languages, with English as a single chat language.
   const LANGUAGES = [
-    { code: "en", label: "English (US)", translateAs: "English", ui: "en" },
-    { code: "en-gb", label: "English (UK)", translateAs: "English", ui: "en" },
+    { code: "en", label: "English", translateAs: "English", ui: "en" },
     { code: "es", label: "Spanish", translateAs: "Spanish", ui: "es" },
     { code: "fr", label: "French", translateAs: "French", ui: "fr" },
     { code: "hi", label: "Hindi", translateAs: "Hindi", ui: "hi" },
@@ -337,11 +336,8 @@
       return byCode.code;
     }
     const lower = value.toLowerCase();
-    if (lower === "english" || lower === "english (us)") {
+    if (lower === "english" || lower === "english (us)" || lower === "english (uk)" || lower === "en-gb") {
       return "en";
-    }
-    if (lower === "english (uk)") {
-      return "en-gb";
     }
     const byLabel = LANGUAGES.find((item) => item.label.toLowerCase() === lower);
     if (byLabel) {
