@@ -596,6 +596,29 @@
     return t("kindText");
   }
 
+  function kindIcon(kind) {
+    if (kind === "audio") {
+      return `
+        <svg class="file-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="7" cy="18" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="18" cy="16" r="2.5" fill="none" stroke="currentColor" stroke-width="2"/>
+        </svg>`;
+    }
+    if (kind === "video") {
+      return `
+        <svg class="file-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <rect x="3" y="6" width="13" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M16 10l5-3v10l-5-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        </svg>`;
+    }
+    return `
+      <svg class="file-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 3h7l5 5v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M14 3v5h5M9 13h6M9 17h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>`;
+  }
+
   function showFilesBrowser() {
     els.filesBrowser.classList.remove("hidden");
     els.textViewer.classList.add("hidden");
@@ -613,8 +636,8 @@
     }
 
     els.fileList.innerHTML = state.files.map((file) => `
-      <button type="button" class="file-item" data-name="${escapeHtml(file.name)}" data-kind="${escapeHtml(file.kind)}">
-        <span class="file-kind">${escapeHtml(kindLabel(file.kind))}</span>
+      <button type="button" class="file-item" data-name="${escapeHtml(file.name)}" data-kind="${escapeHtml(file.kind)}" title="${escapeHtml(kindLabel(file.kind))}">
+        <span class="file-kind" aria-label="${escapeHtml(kindLabel(file.kind))}">${kindIcon(file.kind)}</span>
         <span class="file-name">${escapeHtml(file.name)}</span>
       </button>
     `).join("");
