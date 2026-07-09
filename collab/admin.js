@@ -14,7 +14,6 @@
     logout: document.querySelector("#logout"),
     createForm: document.querySelector("#create-form"),
     newName: document.querySelector("#new-name"),
-    newLabel: document.querySelector("#new-label"),
     newPassword: document.querySelector("#new-password"),
     rooms: document.querySelector("#rooms")
   };
@@ -78,10 +77,7 @@
 
     els.rooms.innerHTML = rooms.map((room) => `
       <article class="room-card" data-room="${escapeHtml(room.name)}">
-        <h3>
-          <span>${escapeHtml(room.label || room.name)}</span>
-          <span>${escapeHtml(room.name)}</span>
-        </h3>
+        <h3>${escapeHtml(room.name)}</h3>
         <div class="room-meta">
           Session ${escapeHtml(String(room.sessionVersion || 1))}
           · ${(room.users || []).length} online
@@ -89,14 +85,10 @@
         ${formatUsers(room.users)}
         <div class="room-actions">
           <label>
-            <span>Label</span>
-            <input class="edit-label" type="text" value="${escapeHtml(room.label || room.name)}" maxlength="120">
-          </label>
-          <label>
             <span>New password</span>
             <input class="edit-password" type="password" maxlength="200" placeholder="Leave blank to keep">
           </label>
-          <button type="button" class="save-room">Save</button>
+          <button type="button" class="save-room">Save password</button>
           <button type="button" class="danger delete-room">Delete</button>
         </div>
       </article>
@@ -162,7 +154,6 @@
         method: "POST",
         body: JSON.stringify({
           name: els.newName.value,
-          label: els.newLabel.value,
           password: els.newPassword.value
         })
       });
@@ -182,16 +173,15 @@
 
     const room = card.getAttribute("data-room");
     if (event.target.classList.contains("save-room")) {
-      const label = card.querySelector(".edit-label").value;
       const password = card.querySelector(".edit-password").value;
-      const body = { name: room, label };
-      if (password) {
-        body.password = password;
+      if (!password) {
+        setAdminStatus("Enter a new password to save.");
+        return;
       }
       try {
         const data = await request("/admin/rooms", {
           method: "PUT",
-          body: JSON.stringify(body)
+          body: JSON.stringify({ name: room, password })
         });
         await refreshRooms();
         setAdminStatus(data.kicked

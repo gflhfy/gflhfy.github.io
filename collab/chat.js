@@ -137,10 +137,8 @@
 
     els.room.disabled = false;
     els.room.innerHTML = state.rooms.map((room) => {
-      const label = room.label && room.label !== room.name
-        ? `${room.label} (${room.name})`
-        : (room.label || room.name);
-      return `<option value="${escapeHtml(room.name)}">${escapeHtml(label)}</option>`;
+      const name = room.name || "";
+      return `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`;
     }).join("");
 
     const preferred = preferredRoom || loadSettingsRoom();
@@ -350,6 +348,14 @@
 
   els.connect.addEventListener("click", connect);
   els.composer.addEventListener("submit", sendMessage);
+  els.message.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      if (!els.send.disabled) {
+        els.composer.requestSubmit();
+      }
+    }
+  });
   els.language.addEventListener("change", () => {
     saveSettings();
     if (state.connected) {
