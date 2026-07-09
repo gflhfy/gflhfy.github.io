@@ -161,9 +161,26 @@ input:disabled {
   padding-left: 18px;
 }
 
+.slug-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.slug-row code {
+  font-family: Consolas, "Courier New", monospace;
+}
+
+.slug-row .copy-slug {
+  width: auto;
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
 .room-actions {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto auto auto;
   gap: 10px;
   align-items: end;
 }

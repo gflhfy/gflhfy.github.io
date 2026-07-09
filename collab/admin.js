@@ -76,12 +76,12 @@
     }
 
     els.rooms.innerHTML = rooms.map((room) => `
-      <article class="room-card" data-room="${escapeHtml(room.name)}">
+      <article class="room-card" data-room="${escapeHtml(room.name)}" data-slug="${escapeHtml(room.slug || "")}">
         <h3>${escapeHtml(room.name)}</h3>
-        <div class="room-meta">
-          Slug <code>${escapeHtml(room.slug || "")}</code>
-          · Session ${escapeHtml(String(room.sessionVersion || 1))}
-          · ${(room.users || []).length} online
+        <div class="room-meta slug-row">
+          <span>Slug <code class="room-slug">${escapeHtml(room.slug || "")}</code></span>
+          <button type="button" class="secondary copy-slug" title="Copy slug">Copy</button>
+          <span>· Session ${escapeHtml(String(room.sessionVersion || 1))} · ${(room.users || []).length} online</span>
         </div>
         <div class="room-meta">Upload folder: ebooks/collab/files/${escapeHtml(room.slug || "")}/</div>
         ${formatUsers(room.users)}
@@ -91,10 +91,27 @@
             <input class="edit-password" type="password" maxlength="200" placeholder="Leave blank to keep">
           </label>
           <button type="button" class="save-room">Save password</button>
+          <button type="button" class="secondary clear-history">Clear chat</button>
           <button type="button" class="danger delete-room">Delete</button>
         </div>
       </article>
     `).join("");
+  }
+
+  async function copySlug(slug) {
+    if (!slug) {
+      throw new Error("Missing slug");
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(slug);
+      return;
+    }
+    const input = document.createElement("input");
+    input.value = slug;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
   }
 
   async function refreshRooms() {
@@ -174,6 +191,18 @@
     }
 
     const room = card.getAttribute("data-room");
+    const slug = card.getAttribute("data-slug") || "";
+
+    if (event.target.classList.contains("copy-slug")) {
+      try {
+        await copySlug(slug);
+        setAdminStatus(`Copied slug: ${slug}`);
+      } catch (error) {
+        setAdminStatus(error.message || "Could not copy slug.");
+      }
+      return;
+    }
+
     if (event.target.classList.contains("save-room")) {
       const password = card.querySelector(".edit-password").value;
       if (!password) {
@@ -189,6 +218,23 @@
         setAdminStatus(data.kicked
           ? `Updated ${room}. Connected users must log in again.`
           : `Updated ${room}.`);
+      } catch (error) {
+        setAdminStatus(error.message);
+      }
+      return;
+    }
+
+    if (event.target.classList.contains("clear-history")) {
+      if (!window.confirm(`Clear all chat history for "${room}"?\n\nOK = clear\nCancel = keep messages`)) {
+        return;
+      }
+      try {
+        await request("/admin/rooms/clear-history", {
+          method: "POST",
+          body: JSON.stringify({ name: room })
+        });
+        await refreshRooms();
+        setAdminStatus(`Cleared chat history for ${room}.`);
       } catch (error) {
         setAdminStatus(error.message);
       }
