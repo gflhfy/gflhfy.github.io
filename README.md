@@ -99,10 +99,12 @@ The private-by-link collaboration chat is deployed under:
 
 ```text
 https://gflhfy.github.io/collab/chat.html
+https://gflhfy.github.io/collab/admin.html
 ```
 
 Its source files live in `ebooks/collab/` and are copied to `/collab/` during
-the GitHub Pages deploy.
+the GitHub Pages deploy. Use the admin page to create rooms and set room
+passwords; the chat page lists those rooms in a dropdown.
 
 Manual deploy from the repository root:
 

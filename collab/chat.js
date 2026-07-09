@@ -22,7 +22,9 @@
     latestId: 0,
     timer: null,
     userId: getUserId(),
-    messages: []
+    messages: [],
+    sessionVersion: null,
+    rooms: []
   };
 
   function getUserId() {
@@ -40,10 +42,10 @@
       const saved = JSON.parse(localStorage.getItem(storageKey)) || {};
       els.language.value = saved.language || "English";
       els.author.value = saved.author || "";
-      els.room.value = saved.room || "main";
+      return saved.room || "";
     } catch {
       els.language.value = "English";
-      els.room.value = "main";
+      return "";
     }
   }
 
@@ -51,7 +53,7 @@
     localStorage.setItem(storageKey, JSON.stringify({
       language: els.language.value,
       author: els.author.value.trim(),
-      room: els.room.value.trim()
+      room: els.room.value
     }));
   }
 
@@ -63,7 +65,7 @@
   }
 
   function roomName() {
-    return (els.room.value || "main").trim() || "main";
+    return els.room.value || "";
   }
 
   function authorName() {
@@ -124,6 +126,63 @@
     els.users.textContent = names.join(", ");
   }
 
+  function fillRooms(rooms, preferredRoom) {
+    state.rooms = Array.isArray(rooms) ? rooms : [];
+    if (!state.rooms.length) {
+      els.room.innerHTML = '<option value="">No rooms yet</option>';
+      els.room.disabled = true;
+      setStatus("No rooms available. Ask an admin to create one.");
+      return;
+    }
+
+    els.room.disabled = false;
+    els.room.innerHTML = state.rooms.map((room) => {
+      const label = room.label && room.label !== room.name
+        ? `${room.label} (${room.name})`
+        : (room.label || room.name);
+      return `<option value="${escapeHtml(room.name)}">${escapeHtml(label)}</option>`;
+    }).join("");
+
+    const preferred = preferredRoom || loadSettingsRoom();
+    if (preferred && state.rooms.some((room) => room.name === preferred)) {
+      els.room.value = preferred;
+    }
+  }
+
+  function loadSettingsRoom() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(storageKey)) || {};
+      return saved.room || "";
+    } catch {
+      return "";
+    }
+  }
+
+  function disconnect(message) {
+    state.connected = false;
+    state.sessionVersion = null;
+    if (state.timer) {
+      window.clearInterval(state.timer);
+      state.timer = null;
+    }
+    els.message.disabled = true;
+    els.send.disabled = true;
+    els.connect.textContent = "Connect";
+    els.users.textContent = "";
+    if (message) {
+      setStatus(message);
+    }
+  }
+
+  function isAuthFailure(error, data) {
+    const code = data && data.code;
+    if (code === "room_auth_failed" || code === "unknown_room") {
+      return true;
+    }
+    const text = String((error && error.message) || "");
+    return /password|unauthorized|unknown room/i.test(text);
+  }
+
   async function request(path, options = {}) {
     const response = await fetch(`${workerUrl}${path}`, {
       ...options,
@@ -134,13 +193,30 @@
     });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) {
+      const error = new Error(data.error || "Request failed");
+      error.data = data;
+      error.status = response.status;
+      throw error;
+    }
+    return data;
+  }
+
+  async function publicRequest(path) {
+    const response = await fetch(`${workerUrl}${path}`);
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
       throw new Error(data.error || "Request failed");
     }
     return data;
   }
 
+  async function loadRooms(preferredRoom) {
+    const data = await publicRequest("/chat/rooms");
+    fillRooms(data.rooms || [], preferredRoom);
+  }
+
   async function sendPresence() {
-    await request("/chat/presence", {
+    const data = await request("/chat/presence", {
       method: "POST",
       body: JSON.stringify({
         room: roomName(),
@@ -149,6 +225,23 @@
         userId: state.userId
       })
     });
+    checkSession(data);
+    return data;
+  }
+
+  function checkSession(data) {
+    if (!data || typeof data.sessionVersion !== "number") {
+      return;
+    }
+    if (state.sessionVersion == null) {
+      state.sessionVersion = data.sessionVersion;
+      return;
+    }
+    if (data.sessionVersion !== state.sessionVersion) {
+      const error = new Error("Room password changed. Enter the new password and connect again.");
+      error.code = "session_kicked";
+      throw error;
+    }
   }
 
   async function poll() {
@@ -164,6 +257,7 @@
         limit: "100"
       });
       const data = await request(`/chat/messages?${params.toString()}`, { method: "GET" });
+      checkSession(data);
       if (data.messages && data.messages.length) {
         state.messages.push(...data.messages);
         state.messages = state.messages.slice(-200);
@@ -173,13 +267,25 @@
       renderUsers(data.users);
       setStatus(`Connected to ${roomName()}.`);
     } catch (error) {
-      setStatus(error.message);
+      handleRuntimeError(error);
     }
   }
 
+  function handleRuntimeError(error) {
+    if (error.code === "session_kicked" || isAuthFailure(error, error.data)) {
+      disconnect(error.message || "Room password changed. Enter the new password and connect again.");
+      return;
+    }
+    setStatus(error.message);
+  }
+
   async function connect() {
+    if (!roomName()) {
+      setStatus("Select a room.");
+      return;
+    }
     if (!els.password.value) {
-      setStatus("Enter the shared password.");
+      setStatus("Enter the room password.");
       return;
     }
 
@@ -187,10 +293,12 @@
     state.connected = true;
     state.latestId = 0;
     state.messages = [];
+    state.sessionVersion = null;
     els.message.disabled = false;
     els.send.disabled = false;
     els.connect.textContent = "Reconnect";
     setStatus("Connecting...");
+    renderMessages();
 
     if (state.timer) {
       window.clearInterval(state.timer);
@@ -200,14 +308,11 @@
       await sendPresence();
       await poll();
       state.timer = window.setInterval(() => {
-        sendPresence().catch(() => {});
-        poll().catch(() => {});
+        sendPresence().catch(handleRuntimeError);
+        poll().catch(handleRuntimeError);
       }, pollMs);
     } catch (error) {
-      state.connected = false;
-      els.message.disabled = true;
-      els.send.disabled = true;
-      setStatus(error.message);
+      disconnect(error.message);
     }
   }
 
@@ -220,7 +325,7 @@
 
     els.send.disabled = true;
     try {
-      await request("/chat/send", {
+      const data = await request("/chat/send", {
         method: "POST",
         body: JSON.stringify({
           room: roomName(),
@@ -230,13 +335,16 @@
           text
         })
       });
+      checkSession(data);
       els.message.value = "";
       await poll();
     } catch (error) {
-      setStatus(error.message);
+      handleRuntimeError(error);
     } finally {
-      els.send.disabled = false;
-      els.message.focus();
+      if (state.connected) {
+        els.send.disabled = false;
+        els.message.focus();
+      }
     }
   }
 
@@ -247,12 +355,21 @@
     if (state.connected) {
       state.latestId = 0;
       state.messages = [];
-      poll().catch((error) => setStatus(error.message));
+      poll().catch(handleRuntimeError);
     }
   });
   els.author.addEventListener("change", saveSettings);
-  els.room.addEventListener("change", saveSettings);
+  els.room.addEventListener("change", () => {
+    saveSettings();
+    if (state.connected) {
+      disconnect("Room changed. Connect again.");
+    }
+  });
 
-  loadSettings();
+  const preferredRoom = loadSettings();
+  loadRooms(preferredRoom).catch((error) => {
+    els.room.innerHTML = '<option value="">Failed to load rooms</option>';
+    els.room.disabled = true;
+    setStatus(error.message);
+  });
 }());
-

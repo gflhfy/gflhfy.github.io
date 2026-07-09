@@ -22,10 +22,12 @@
         </label>
         <label>
           <span>Room</span>
-          <input id="room" type="text" maxlength="80" value="main">
+          <select id="room" disabled>
+            <option value="">Loading rooms...</option>
+          </select>
         </label>
         <label class="password-field">
-          <span>Password</span>
+          <span>Room password</span>
           <input id="password" type="password" autocomplete="current-password">
         </label>
         <button id="connect" type="button">Connect</button>

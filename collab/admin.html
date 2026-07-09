@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GFL HFY Collab Admin</title>
+    <link rel="stylesheet" href="admin.css">
+  </head>
+  <body>
+    <main class="admin-shell">
+      <header class="admin-header">
+        <h1>Collab Admin</h1>
+        <p>Create rooms, set passwords, and see who is online.</p>
+      </header>
+
+      <section id="login-panel" class="panel">
+        <label>
+          <span>Admin password</span>
+          <input id="admin-password" type="password" autocomplete="current-password">
+        </label>
+        <button id="admin-login" type="button">Unlock</button>
+        <p id="login-status" class="status">Enter the admin password to manage rooms.</p>
+      </section>
+
+      <section id="admin-panel" class="admin-panel hidden">
+        <div class="toolbar">
+          <p id="admin-status" class="status">Ready.</p>
+          <button id="refresh" type="button">Refresh</button>
+          <button id="logout" type="button" class="secondary">Lock</button>
+        </div>
+
+        <section class="panel">
+          <h2>Add room</h2>
+          <form id="create-form" class="create-form">
+            <label>
+              <span>Room name</span>
+              <input id="new-name" type="text" maxlength="80" placeholder="mermaid-timeline" required>
+            </label>
+            <label>
+              <span>Label</span>
+              <input id="new-label" type="text" maxlength="120" placeholder="Optional display label">
+            </label>
+            <label>
+              <span>Password</span>
+              <input id="new-password" type="password" maxlength="200" required>
+            </label>
+            <button type="submit">Create room</button>
+          </form>
+        </section>
+
+        <section class="panel">
+          <h2>Rooms</h2>
+          <div id="rooms" class="rooms"></div>
+        </section>
+      </section>
+    </main>
+    <script src="admin.js"></script>
+  </body>
+</html>

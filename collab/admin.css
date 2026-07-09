@@ -1,0 +1,204 @@
+:root {
+  color-scheme: light dark;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f6f4ef;
+  color: #1f2528;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.admin-shell {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 18px;
+  display: grid;
+  gap: 14px;
+}
+
+.admin-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+}
+
+.admin-header p {
+  margin: 0;
+  color: #526068;
+}
+
+.panel,
+.room-card {
+  background: #ffffff;
+  border: 1px solid #d7d1c6;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.admin-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.toolbar .status {
+  flex: 1;
+  min-width: 180px;
+  margin: 0;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+label span,
+.room-card h3 span {
+  color: #4f5a60;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+input,
+button {
+  width: 100%;
+  font: inherit;
+}
+
+input {
+  border: 1px solid #bbb4aa;
+  border-radius: 6px;
+  padding: 9px;
+  background: #fff;
+  color: #1f2528;
+}
+
+button {
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: #176b63;
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button.secondary {
+  background: #5b676d;
+}
+
+button.danger {
+  background: #8b3a3a;
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+#login-panel {
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 10px;
+  align-items: end;
+}
+
+#login-panel .status {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.create-form {
+  display: grid;
+  grid-template-columns: 1.2fr 1.2fr 1fr 140px;
+  gap: 10px;
+  align-items: end;
+}
+
+.rooms {
+  display: grid;
+  gap: 12px;
+}
+
+.room-card {
+  display: grid;
+  gap: 12px;
+}
+
+.room-card h3 {
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.room-meta,
+.users,
+.status {
+  color: #526068;
+  font-size: 13px;
+}
+
+.users {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.room-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 10px;
+  align-items: end;
+}
+
+@media (max-width: 760px) {
+  #login-panel,
+  .create-form,
+  .room-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    background: #111517;
+    color: #f3f0e8;
+  }
+
+  .panel,
+  .room-card {
+    background: #1b2124;
+    border-color: #333b40;
+  }
+
+  input {
+    background: #101416;
+    border-color: #465057;
+    color: #f3f0e8;
+  }
+
+  .admin-header p,
+  label span,
+  .room-meta,
+  .users,
+  .status {
+    color: #a8b0b5;
+  }
+}
