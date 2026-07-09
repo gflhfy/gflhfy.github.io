@@ -95,6 +95,15 @@ Live site: [https://gflhfy.github.io/](https://gflhfy.github.io/) from [gflhfy/g
 
 **Publish ebook** on the dashboard also deploys the static site when GitHub is reachable. If you are offline, local publish still completes and GitHub upload is skipped.
 
+The private-by-link collaboration chat is deployed under:
+
+```text
+https://gflhfy.github.io/collab/chat.html
+```
+
+Its source files live in `ebooks/collab/` and are copied to `/collab/` during
+the GitHub Pages deploy.
+
 Manual deploy from the repository root:
 
 ```powershell
