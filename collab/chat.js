@@ -417,9 +417,6 @@
         els.messages.scrollTop = els.messages.scrollHeight;
       });
     }
-    if (next === "files") {
-      showFilesBrowser();
-    }
   }
 
   function applyUi() {
@@ -675,7 +672,6 @@
   }
 
   function renderFileList() {
-    showFilesBrowser();
     if (!state.connected) {
       els.fileList.innerHTML = `<div class="files-empty">${escapeHtml(t("connectForFiles"))}</div>`;
       return;
@@ -701,7 +697,6 @@
       return;
     }
 
-    showFilesBrowser();
     els.fileList.innerHTML = `<div class="files-empty">${escapeHtml(t("loadingFiles"))}</div>`;
     if (els.filesRefresh) {
       els.filesRefresh.disabled = true;
@@ -1132,7 +1127,6 @@
   });
   els.viewerBack.addEventListener("click", () => {
     showFilesBrowser();
-    renderFileList();
   });
   els.mobileTabs.forEach((button) => {
     button.addEventListener("click", () => {
