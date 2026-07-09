@@ -415,8 +415,9 @@ textarea {
   padding: 16px 18px;
   font: inherit;
   line-height: 1.45;
-  background: #fffdf8;
-  color: inherit;
+  background: #111517;
+  color: #f3f0e8;
+  caret-color: #f3f0e8;
 }
 
 .file-item.has-override .file-name::after {
