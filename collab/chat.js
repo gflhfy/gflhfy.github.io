@@ -44,6 +44,8 @@
       connectForFiles: "Connect to a room to see files.",
       emptyFiles: "Empty",
       loadingFiles: "Loading files...",
+      filesHeading: "Files",
+      refreshFiles: "Refresh",
       back: "Back",
       kindAudio: "Audio",
       kindVideo: "Video",
@@ -77,6 +79,8 @@
       connectForFiles: "Conéctate a una sala para ver archivos.",
       emptyFiles: "Vacío",
       loadingFiles: "Cargando archivos...",
+      filesHeading: "Archivos",
+      refreshFiles: "Actualizar",
       back: "Atrás",
       kindAudio: "Audio",
       kindVideo: "Video",
@@ -110,6 +114,8 @@
       connectForFiles: "Connectez-vous à une salle pour voir les fichiers.",
       emptyFiles: "Vide",
       loadingFiles: "Chargement des fichiers...",
+      filesHeading: "Fichiers",
+      refreshFiles: "Actualiser",
       back: "Retour",
       kindAudio: "Audio",
       kindVideo: "Vidéo",
@@ -143,6 +149,8 @@
       connectForFiles: "फ़ाइलें देखने के लिए एक कमरे से कनेक्ट करें।",
       emptyFiles: "खाली",
       loadingFiles: "फ़ाइलें लोड हो रही हैं...",
+      filesHeading: "फ़ाइलें",
+      refreshFiles: "रीफ़्रेश",
       back: "वापस",
       kindAudio: "ऑडियो",
       kindVideo: "वीडियो",
@@ -176,6 +184,8 @@
       connectForFiles: "Connettiti a una stanza per vedere i file.",
       emptyFiles: "Vuoto",
       loadingFiles: "Caricamento file...",
+      filesHeading: "File",
+      refreshFiles: "Aggiorna",
       back: "Indietro",
       kindAudio: "Audio",
       kindVideo: "Video",
@@ -209,6 +219,8 @@
       connectForFiles: "ファイルを見るにはルームに接続してください。",
       emptyFiles: "空",
       loadingFiles: "ファイルを読み込み中...",
+      filesHeading: "ファイル",
+      refreshFiles: "更新",
       back: "戻る",
       kindAudio: "音声",
       kindVideo: "動画",
@@ -242,6 +254,8 @@
       connectForFiles: "Conecte-se a uma sala para ver os arquivos.",
       emptyFiles: "Vazio",
       loadingFiles: "Carregando arquivos...",
+      filesHeading: "Arquivos",
+      refreshFiles: "Atualizar",
       back: "Voltar",
       kindAudio: "Áudio",
       kindVideo: "Vídeo",
@@ -275,6 +289,8 @@
       connectForFiles: "连接房间后可查看文件。",
       emptyFiles: "空",
       loadingFiles: "正在加载文件...",
+      filesHeading: "文件",
+      refreshFiles: "刷新",
       back: "返回",
       kindAudio: "音频",
       kindVideo: "视频",
@@ -299,6 +315,7 @@
     send: document.querySelector("#send"),
     splitter: document.querySelector("#splitter"),
     filesBrowser: document.querySelector("#files-browser"),
+    filesRefresh: document.querySelector("#files-refresh"),
     fileList: document.querySelector("#file-list"),
     audioPlayer: document.querySelector("#audio-player"),
     audioTitle: document.querySelector("#audio-title"),
@@ -598,12 +615,16 @@
   async function loadRoomFiles() {
     state.roomSlug = currentRoomSlug();
     state.files = [];
-    if (!state.roomSlug) {
+    if (!state.connected || !state.roomSlug) {
       renderFileList();
       return;
     }
 
+    showFilesBrowser();
     els.fileList.innerHTML = `<div class="files-empty">${escapeHtml(t("loadingFiles"))}</div>`;
+    if (els.filesRefresh) {
+      els.filesRefresh.disabled = true;
+    }
     try {
       const response = await fetch(`${filesBaseUrl}/${encodeURIComponent(state.roomSlug)}/manifest.json?ts=${Date.now()}`, {
         cache: "no-store"
@@ -626,6 +647,10 @@
     } catch {
       state.files = [];
       renderFileList();
+    } finally {
+      if (els.filesRefresh) {
+        els.filesRefresh.disabled = false;
+      }
     }
   }
 
@@ -1004,6 +1029,13 @@
     }
   });
   els.fileList.addEventListener("click", onFileClick);
+  els.filesRefresh.addEventListener("click", () => {
+    if (!state.connected) {
+      renderFileList();
+      return;
+    }
+    loadRoomFiles();
+  });
   els.viewerBack.addEventListener("click", () => {
     showFilesBrowser();
     renderFileList();
