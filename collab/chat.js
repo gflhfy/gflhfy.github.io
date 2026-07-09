@@ -1,6 +1,7 @@
 (function () {
   const workerUrl = "https://gflhfy-collab-translator.gflhfy-collab.workers.dev";
   const storageKey = "gflhfy-collab-chat-settings";
+  const passwordKey = "gflhfy-collab-chat-password";
   const pollMs = 2500;
 
   // Kokoro book languages, with English as a single chat language.
@@ -464,9 +465,11 @@
       const saved = JSON.parse(localStorage.getItem(storageKey)) || {};
       fillLanguageOptions(migrateLanguage(saved.language));
       els.author.value = saved.author || "";
+      els.password.value = localStorage.getItem(passwordKey) || "";
       return saved.room || "";
     } catch {
       fillLanguageOptions("en");
+      els.password.value = localStorage.getItem(passwordKey) || "";
       return "";
     }
   }
@@ -477,6 +480,11 @@
       author: els.author.value.trim(),
       room: els.room.value
     }));
+    if (els.password.value) {
+      localStorage.setItem(passwordKey, els.password.value);
+    } else {
+      localStorage.removeItem(passwordKey);
+    }
   }
 
   function authHeaders() {
@@ -1001,6 +1009,13 @@
   }
 
   els.connect.addEventListener("click", connect);
+  els.password.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      connect();
+    }
+  });
+  els.password.addEventListener("change", saveSettings);
   els.composer.addEventListener("submit", sendMessage);
   els.message.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
