@@ -1,7 +1,11 @@
 ﻿{
     "room":  "rosedenize",
-    "updatedAt":  "2026-07-09T20:21:14.6217056Z",
+    "updatedAt":  "2026-07-09T22:43:49.6872433Z",
     "files":  [
+                  {
+                      "name":  "outro_cta.txt",
+                      "kind":  "text"
+                  },
                   {
                       "name":  "outro_dora.wav",
                       "kind":  "audio"
