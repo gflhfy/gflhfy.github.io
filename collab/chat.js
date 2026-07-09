@@ -862,7 +862,11 @@
     }
   }
 
-  function disconnect(messageKeyOrText, vars = {}) {
+  function disconnect(messageKeyOrText, vars = {}, options = {}) {
+    const notifyLeave = options.notifyLeave !== false && state.connected;
+    if (notifyLeave) {
+      leaveRoom();
+    }
     state.connected = false;
     state.sessionVersion = null;
     state.files = [];
@@ -889,6 +893,26 @@
       } else {
         setStatusRaw(messageKeyOrText);
       }
+    }
+  }
+
+  function leaveRoom() {
+    if (!els.password.value || !roomName()) {
+      return;
+    }
+    const payload = JSON.stringify({
+      room: roomName(),
+      userId: state.userId
+    });
+    try {
+      fetch(`${workerUrl}/chat/leave`, {
+        method: "POST",
+        headers: authHeaders(),
+        body: payload,
+        keepalive: true
+      }).catch(() => {});
+    } catch {
+      // Best-effort only; 5-minute prune remains the fallback.
     }
   }
 
@@ -1151,6 +1175,11 @@
     button.addEventListener("click", () => {
       setMobileTab(button.getAttribute("data-tab"));
     });
+  });
+  window.addEventListener("pagehide", () => {
+    if (state.connected) {
+      leaveRoom();
+    }
   });
 
   setupSplitter();
