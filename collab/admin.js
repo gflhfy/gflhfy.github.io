@@ -87,8 +87,8 @@
         ${formatUsers(room.users)}
         <div class="room-actions">
           <label>
-            <span>New password</span>
-            <input class="edit-password" type="password" maxlength="200" placeholder="Leave blank to keep">
+            <span>Room password</span>
+            <input class="edit-password" type="text" maxlength="200" value="${escapeHtml(room.password || "")}" autocomplete="off" spellcheck="false">
           </label>
           <button type="button" class="save-room">Save password</button>
           <button type="button" class="secondary clear-history">Clear chat</button>
@@ -204,9 +204,9 @@
     }
 
     if (event.target.classList.contains("save-room")) {
-      const password = card.querySelector(".edit-password").value;
+      const password = card.querySelector(".edit-password").value.trim();
       if (!password) {
-        setAdminStatus("Enter a new password to save.");
+        setAdminStatus("Enter a room password to save.");
         return;
       }
       try {
@@ -217,7 +217,7 @@
         await refreshRooms();
         setAdminStatus(data.kicked
           ? `Updated ${room}. Connected users must log in again.`
-          : `Updated ${room}.`);
+          : `Password unchanged for ${room}.`);
       } catch (error) {
         setAdminStatus(error.message);
       }
