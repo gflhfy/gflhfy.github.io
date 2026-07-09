@@ -51,6 +51,8 @@
       tabLogin: "Login",
       tabChat: "Chat",
       tabFiles: "Files",
+      newMessageTitle: "New message in {room}",
+      newMessagesCount: "{count} new messages",
       kindAudio: "Audio",
       kindVideo: "Video",
       kindText: "Text"
@@ -89,6 +91,8 @@
       tabLogin: "Acceso",
       tabChat: "Chat",
       tabFiles: "Archivos",
+      newMessageTitle: "Nuevo mensaje en {room}",
+      newMessagesCount: "{count} mensajes nuevos",
       kindAudio: "Audio",
       kindVideo: "Video",
       kindText: "Texto"
@@ -127,6 +131,8 @@
       tabLogin: "Connexion",
       tabChat: "Chat",
       tabFiles: "Fichiers",
+      newMessageTitle: "Nouveau message dans {room}",
+      newMessagesCount: "{count} nouveaux messages",
       kindAudio: "Audio",
       kindVideo: "Vidéo",
       kindText: "Texte"
@@ -165,6 +171,8 @@
       tabLogin: "लॉगिन",
       tabChat: "चैट",
       tabFiles: "फ़ाइलें",
+      newMessageTitle: "{room} में नया संदेश",
+      newMessagesCount: "{count} नए संदेश",
       kindAudio: "ऑडियो",
       kindVideo: "वीडियो",
       kindText: "पाठ"
@@ -203,6 +211,8 @@
       tabLogin: "Accesso",
       tabChat: "Chat",
       tabFiles: "File",
+      newMessageTitle: "Nuovo messaggio in {room}",
+      newMessagesCount: "{count} nuovi messaggi",
       kindAudio: "Audio",
       kindVideo: "Video",
       kindText: "Testo"
@@ -241,6 +251,8 @@
       tabLogin: "ログイン",
       tabChat: "チャット",
       tabFiles: "ファイル",
+      newMessageTitle: "{room} の新着メッセージ",
+      newMessagesCount: "{count} 件の新着メッセージ",
       kindAudio: "音声",
       kindVideo: "動画",
       kindText: "テキスト"
@@ -279,6 +291,8 @@
       tabLogin: "Entrar",
       tabChat: "Chat",
       tabFiles: "Arquivos",
+      newMessageTitle: "Nova mensagem em {room}",
+      newMessagesCount: "{count} novas mensagens",
       kindAudio: "Áudio",
       kindVideo: "Vídeo",
       kindText: "Texto"
@@ -317,6 +331,8 @@
       tabLogin: "登录",
       tabChat: "聊天",
       tabFiles: "文件",
+      newMessageTitle: "{room} 有新消息",
+      newMessagesCount: "{count} 条新消息",
       kindAudio: "音频",
       kindVideo: "视频",
       kindText: "文本"
@@ -366,7 +382,9 @@
     roomSlug: "",
     files: [],
     mobileTab: "login",
-    textViewerOpen: false
+    textViewerOpen: false,
+    pageTitle: document.title,
+    unreadCount: 0
   };
 
   function getUserId() {
@@ -916,6 +934,66 @@
     }
   }
 
+  function ensureNotificationPermission() {
+    if (!("Notification" in window)) {
+      return;
+    }
+    if (Notification.permission === "default") {
+      Notification.requestPermission().catch(() => {});
+    }
+  }
+
+  function clearUnreadBadge() {
+    state.unreadCount = 0;
+    document.title = state.pageTitle;
+  }
+
+  function notifyIncomingMessages(messages) {
+    if (!Array.isArray(messages) || !messages.length) {
+      return;
+    }
+
+    const others = messages.filter((message) => message.author !== authorName());
+    if (!others.length) {
+      return;
+    }
+
+    const away = document.hidden || !document.hasFocus();
+    if (!away) {
+      clearUnreadBadge();
+      return;
+    }
+
+    state.unreadCount += others.length;
+    document.title = `(${state.unreadCount}) ${state.pageTitle}`;
+
+    if (!("Notification" in window) || Notification.permission !== "granted") {
+      return;
+    }
+
+    const latest = others[others.length - 1];
+    const body = others.length === 1
+      ? `${latest.author}: ${String(latest.displayText || "").slice(0, 140)}`
+      : t("newMessagesCount", { count: others.length });
+
+    try {
+      const note = new Notification(t("newMessageTitle", { room: roomName() }), {
+        body,
+        tag: `gflhfy-collab-${roomName()}`,
+        renotify: true
+      });
+      note.onclick = () => {
+        window.focus();
+        if (isMobileLayout()) {
+          setMobileTab("chat");
+        }
+        note.close();
+      };
+    } catch {
+      // Ignore notification failures.
+    }
+  }
+
   function isAuthFailure(error, data) {
     const code = data && data.code;
     if (code === "room_auth_failed" || code === "unknown_room") {
@@ -986,27 +1064,30 @@
     }
   }
 
-  function mergeMessages(incoming) {
+  function mergeMessages(incoming, options = {}) {
     if (!Array.isArray(incoming) || !incoming.length) {
-      return false;
+      return [];
     }
 
     const seen = new Set(state.messages.map((message) => message.id));
-    let added = false;
+    const added = [];
     for (const message of incoming) {
       if (seen.has(message.id)) {
         continue;
       }
       seen.add(message.id);
       state.messages.push(message);
-      added = true;
+      added.push(message);
       if (message.id > state.latestId) {
         state.latestId = message.id;
       }
     }
 
-    if (added) {
+    if (added.length) {
       state.messages = state.messages.slice(-200);
+      if (options.notify) {
+        notifyIncomingMessages(added);
+      }
     }
     return added;
   }
@@ -1029,7 +1110,8 @@
         });
         const data = await request(`/chat/messages?${params.toString()}`, { method: "GET" });
         checkSession(data);
-        if (mergeMessages(data.messages)) {
+        const added = mergeMessages(data.messages, { notify: true });
+        if (added.length) {
           renderMessages();
         }
         renderUsers(data.users);
@@ -1063,6 +1145,8 @@
     }
 
     saveSettings();
+    ensureNotificationPermission();
+    clearUnreadBadge();
     state.connected = true;
     state.latestId = 0;
     state.messages = [];
@@ -1181,6 +1265,12 @@
       leaveRoom();
     }
   });
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      clearUnreadBadge();
+    }
+  });
+  window.addEventListener("focus", clearUnreadBadge);
 
   setupSplitter();
   setMobileTab("login");
