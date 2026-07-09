@@ -79,9 +79,11 @@
       <article class="room-card" data-room="${escapeHtml(room.name)}">
         <h3>${escapeHtml(room.name)}</h3>
         <div class="room-meta">
-          Session ${escapeHtml(String(room.sessionVersion || 1))}
+          Slug <code>${escapeHtml(room.slug || "")}</code>
+          · Session ${escapeHtml(String(room.sessionVersion || 1))}
           · ${(room.users || []).length} online
         </div>
+        <div class="room-meta">Upload folder: ebooks/collab/files/${escapeHtml(room.slug || "")}/</div>
         ${formatUsers(room.users)}
         <div class="room-actions">
           <label>

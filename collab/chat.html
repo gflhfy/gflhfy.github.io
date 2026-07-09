@@ -5,43 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>GFL HFY Collab Chat</title>
     <link rel="stylesheet" href="chat.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
   <body>
-    <main class="chat-shell">
-      <section class="setup" aria-label="Chat settings">
-        <label>
-          <span data-i18n="yourLanguage">Your language</span>
-          <select id="language"></select>
-        </label>
-        <label>
-          <span data-i18n="name">Name</span>
-          <input id="author" type="text" autocomplete="nickname" maxlength="80" data-i18n-placeholder="namePlaceholder" placeholder="Your name">
-        </label>
-        <label>
-          <span data-i18n="room">Room</span>
-          <select id="room" disabled>
-            <option value="" data-i18n="loadingRooms">Loading rooms...</option>
-          </select>
-        </label>
-        <label class="password-field">
-          <span data-i18n="roomPassword">Room password</span>
-          <input id="password" type="password" autocomplete="current-password">
-        </label>
-        <button id="connect" type="button" data-i18n="connect">Connect</button>
-      </section>
+    <div class="app-shell">
+      <main class="chat-pane">
+        <section class="setup" aria-label="Chat settings">
+          <label>
+            <span data-i18n="yourLanguage">Your language</span>
+            <select id="language"></select>
+          </label>
+          <label>
+            <span data-i18n="name">Name</span>
+            <input id="author" type="text" autocomplete="nickname" maxlength="80" data-i18n-placeholder="namePlaceholder" placeholder="Your name">
+          </label>
+          <label>
+            <span data-i18n="room">Room</span>
+            <select id="room" disabled>
+              <option value="" data-i18n="loadingRooms">Loading rooms...</option>
+            </select>
+          </label>
+          <label class="password-field">
+            <span data-i18n="roomPassword">Room password</span>
+            <input id="password" type="password" autocomplete="current-password">
+          </label>
+          <button id="connect" type="button" data-i18n="connect">Connect</button>
+        </section>
 
-      <section class="status-row" aria-live="polite">
-        <span id="status" data-i18n="notConnected">Not connected.</span>
-        <span id="users"></span>
-      </section>
+        <section class="status-row" aria-live="polite">
+          <span id="status" data-i18n="notConnected">Not connected.</span>
+          <span id="users"></span>
+        </section>
 
-      <section id="messages" class="messages" aria-label="Messages"></section>
+        <section id="messages" class="messages" aria-label="Messages"></section>
 
-      <form id="composer" class="composer">
-        <textarea id="message" rows="3" maxlength="1000" data-i18n-placeholder="messagePlaceholder" placeholder="Write a message..." disabled></textarea>
-        <button id="send" type="submit" data-i18n="send" disabled>Send</button>
-      </form>
-    </main>
+        <form id="composer" class="composer">
+          <textarea id="message" rows="3" maxlength="1000" data-i18n-placeholder="messagePlaceholder" placeholder="Write a message..." disabled></textarea>
+          <button id="send" type="submit" data-i18n="send" disabled>Send</button>
+        </form>
+      </main>
+
+      <div id="splitter" class="splitter" role="separator" aria-orientation="vertical" aria-label="Resize panels" tabindex="0"></div>
+
+      <aside class="files-pane" aria-label="Room files">
+        <section id="files-browser" class="files-browser">
+          <div class="audio-player-wrap">
+            <div id="audio-title" class="audio-title" data-i18n="noAudio">No audio selected</div>
+            <audio id="audio-player" controls preload="metadata"></audio>
+          </div>
+          <div id="file-list" class="file-list">
+            <div class="files-empty" data-i18n="connectForFiles">Connect to a room to see files.</div>
+          </div>
+        </section>
+
+        <section id="text-viewer" class="text-viewer hidden">
+          <div class="viewer-toolbar">
+            <button id="viewer-back" type="button" data-i18n="back">Back</button>
+            <h2 id="viewer-title"></h2>
+          </div>
+          <article id="viewer-body" class="viewer-body"></article>
+        </section>
+      </aside>
+    </div>
     <script src="chat.js"></script>
   </body>
 </html>

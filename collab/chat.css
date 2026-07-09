@@ -3,6 +3,7 @@
   font-family: Arial, Helvetica, sans-serif;
   background: #f6f4ef;
   color: #1f2528;
+  --chat-width: 58%;
 }
 
 * {
@@ -11,21 +12,56 @@
 
 body {
   margin: 0;
+  min-height: 100vh;
 }
 
-.chat-shell {
+.app-shell {
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-columns: minmax(280px, var(--chat-width)) 8px minmax(240px, 1fr);
   min-height: 100vh;
-  max-width: 980px;
-  margin: 0 auto;
+  height: 100vh;
+}
+
+.chat-pane,
+.files-pane {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+}
+
+.chat-pane {
+  grid-template-rows: auto auto 1fr auto;
   padding: 14px;
   gap: 10px;
 }
 
+.splitter {
+  cursor: col-resize;
+  background: #d7d1c6;
+  border: 0;
+  padding: 0;
+  width: 8px;
+  align-self: stretch;
+}
+
+.splitter:hover,
+.splitter:focus {
+  background: #176b63;
+  outline: none;
+}
+
+.files-pane {
+  grid-template-rows: 1fr;
+  border-left: 1px solid #d7d1c6;
+  background: #f0eee8;
+}
+
 .setup,
 .status-row,
-.composer {
+.composer,
+.audio-player-wrap,
+.file-list,
+.text-viewer {
   background: #ffffff;
   border: 1px solid #d7d1c6;
   border-radius: 8px;
@@ -95,7 +131,7 @@ textarea:disabled {
 }
 
 .messages {
-  min-height: 260px;
+  min-height: 160px;
   overflow: auto;
   padding: 6px 0;
 }
@@ -168,7 +204,151 @@ textarea {
   line-height: 1.4;
 }
 
-@media (max-width: 760px) {
+.files-browser,
+.text-viewer {
+  display: grid;
+  min-height: 0;
+  height: 100%;
+}
+
+.files-browser {
+  grid-template-rows: auto 1fr;
+  gap: 10px;
+  padding: 14px;
+}
+
+.audio-player-wrap {
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.audio-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4f5a60;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#audio-player {
+  width: 100%;
+}
+
+.file-list {
+  overflow: auto;
+  padding: 8px;
+  min-height: 120px;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.files-empty {
+  margin: auto;
+  color: #7a858b;
+  font-size: 14px;
+  text-align: center;
+  padding: 24px;
+}
+
+.file-item {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.file-item:hover {
+  background: #f0eee8;
+  border-color: #d7d1c6;
+}
+
+.file-kind {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #176b63;
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-viewer {
+  grid-template-rows: auto 1fr;
+  margin: 14px;
+  overflow: hidden;
+}
+
+.viewer-toolbar {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid #d7d1c6;
+}
+
+.viewer-toolbar h2 {
+  margin: 0;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viewer-body {
+  overflow: auto;
+  padding: 16px 18px;
+  line-height: 1.5;
+}
+
+.viewer-body pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.viewer-body :is(h1, h2, h3, h4) {
+  line-height: 1.25;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .splitter {
+    display: none;
+  }
+
+  .chat-pane {
+    min-height: 70vh;
+  }
+
+  .files-pane {
+    border-left: 0;
+    border-top: 1px solid #d7d1c6;
+    min-height: 50vh;
+  }
+
   .setup {
     grid-template-columns: 1fr 1fr;
   }
@@ -180,7 +360,8 @@ textarea {
 
 @media (max-width: 520px) {
   .setup,
-  .composer {
+  .composer,
+  .viewer-toolbar {
     grid-template-columns: 1fr;
   }
 
@@ -196,12 +377,24 @@ textarea {
     color: #f3f0e8;
   }
 
+  .files-pane {
+    background: #151a1d;
+    border-color: #333b40;
+  }
+
   .setup,
   .status-row,
   .composer,
-  .message {
+  .message,
+  .audio-player-wrap,
+  .file-list,
+  .text-viewer {
     background: #1b2124;
     border-color: #333b40;
+  }
+
+  .splitter {
+    background: #333b40;
   }
 
   input,
@@ -215,7 +408,9 @@ textarea {
   label span,
   .status-row,
   .message-meta,
-  .translation-note {
+  .translation-note,
+  .audio-title,
+  .files-empty {
     color: #a8b0b5;
   }
 
@@ -223,8 +418,12 @@ textarea {
     color: #f3f0e8;
   }
 
-  .original-text {
+  .original-text,
+  .file-item:hover {
     background: #12181b;
   }
-}
 
+  .viewer-toolbar {
+    border-color: #333b40;
+  }
+}
