@@ -75,7 +75,26 @@
       return;
     }
 
-    els.rooms.innerHTML = rooms.map((room) => `
+    els.rooms.innerHTML = rooms.map((room) => {
+      const overrides = Array.isArray(room.fileOverrides) ? room.fileOverrides : [];
+      const overrideList = overrides.length
+        ? `<div class="override-list">
+            <p class="room-meta"><strong>${overrides.length}</strong> edited text file(s) on Cloudflare (override Pages):</p>
+            <ul>
+              ${overrides.map((file) => `
+                <li data-file="${escapeHtml(file.name)}">
+                  <code>${escapeHtml(file.name)}</code>
+                  <span class="room-meta">${escapeHtml(file.updatedBy || "")} ${escapeHtml(file.updatedAt || "")}</span>
+                  <button type="button" class="secondary download-override">Download</button>
+                  <button type="button" class="danger revert-override">Revert</button>
+                </li>
+              `).join("")}
+            </ul>
+            <button type="button" class="secondary export-overrides">Export all edits (JSON)</button>
+          </div>`
+        : `<p class="room-meta">No Cloudflare text edits yet.</p>`;
+
+      return `
       <article class="room-card" data-room="${escapeHtml(room.name)}" data-slug="${escapeHtml(room.slug || "")}">
         <h3>${escapeHtml(room.name)}</h3>
         <div class="room-meta slug-row">
@@ -85,6 +104,7 @@
         </div>
         <div class="room-meta">Upload folder: ebooks/collab/files/${escapeHtml(room.slug || "")}/</div>
         ${formatUsers(room.users)}
+        ${overrideList}
         <div class="room-actions">
           <label>
             <span>Room password</span>
@@ -95,7 +115,20 @@
           <button type="button" class="danger delete-room">Delete</button>
         </div>
       </article>
-    `).join("");
+    `;
+    }).join("");
+  }
+
+  function downloadTextFile(name, text) {
+    const blob = new Blob([text || ""], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = name;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
   }
 
   async function copySlug(slug) {
@@ -116,7 +149,16 @@
 
   async function refreshRooms() {
     const data = await request("/admin/rooms", { method: "GET" });
-    renderRooms(data.rooms || []);
+    const rooms = data.rooms || [];
+    for (const room of rooms) {
+      try {
+        const files = await request(`/admin/files?room=${encodeURIComponent(room.name)}`, { method: "GET" });
+        room.fileOverrides = files.files || [];
+      } catch {
+        room.fileOverrides = [];
+      }
+    }
+    renderRooms(rooms);
     setAdminStatus(`Updated ${new Date().toLocaleTimeString()}.`);
   }
 
@@ -199,6 +241,70 @@
         setAdminStatus(`Copied slug: ${slug}`);
       } catch (error) {
         setAdminStatus(error.message || "Could not copy slug.");
+      }
+      return;
+    }
+
+    if (event.target.classList.contains("download-override")) {
+      const item = event.target.closest("li");
+      const fileName = item?.getAttribute("data-file");
+      if (!fileName) {
+        return;
+      }
+      try {
+        const data = await request(
+          `/admin/files/${encodeURIComponent(fileName)}?room=${encodeURIComponent(room)}`,
+          { method: "GET" }
+        );
+        downloadTextFile(fileName, data.text || "");
+        setAdminStatus(`Downloaded ${fileName}`);
+      } catch (error) {
+        setAdminStatus(error.message);
+      }
+      return;
+    }
+
+    if (event.target.classList.contains("export-overrides")) {
+      try {
+        const data = await request(
+          `/admin/files?room=${encodeURIComponent(room)}&includeText=1`,
+          { method: "GET" }
+        );
+        const payload = {
+          room: data.room,
+          slug: data.slug,
+          exportedAt: new Date().toISOString(),
+          files: data.files || []
+        };
+        downloadTextFile(
+          `${data.slug || "room"}-file-overrides.json`,
+          JSON.stringify(payload, null, 2) + "\n"
+        );
+        setAdminStatus(`Exported ${(data.files || []).length} edited file(s) for ${room}.`);
+      } catch (error) {
+        setAdminStatus(error.message);
+      }
+      return;
+    }
+
+    if (event.target.classList.contains("revert-override")) {
+      const item = event.target.closest("li");
+      const fileName = item?.getAttribute("data-file");
+      if (!fileName) {
+        return;
+      }
+      if (!window.confirm(`Revert ${fileName} to the Pages file? Cloudflare edits will be deleted.`)) {
+        return;
+      }
+      try {
+        await request(`/admin/files/${encodeURIComponent(fileName)}`, {
+          method: "DELETE",
+          body: JSON.stringify({ room })
+        });
+        await refreshRooms();
+        setAdminStatus(`Reverted ${fileName} for ${room}.`);
+      } catch (error) {
+        setAdminStatus(error.message);
       }
       return;
     }

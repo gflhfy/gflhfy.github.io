@@ -48,6 +48,18 @@
       filesHeading: "Files",
       refreshFiles: "Refresh",
       back: "Back",
+      edit: "Edit",
+      preview: "Preview",
+      save: "Save",
+      cancel: "Cancel",
+      revert: "Revert",
+      editedBadge: "Edited",
+      editedOnCloud: "Saved on server (overrides Pages file).",
+      viewingPages: "From GitHub Pages.",
+      savedOk: "Saved.",
+      revertedOk: "Reverted to Pages file.",
+      saveFailed: "Could not save.",
+      revertConfirm: "Discard the saved edits and show the original Pages file again?",
       tabLogin: "Login",
       tabChat: "Chat",
       tabFiles: "Files",
@@ -88,6 +100,18 @@
       filesHeading: "Archivos",
       refreshFiles: "Actualizar",
       back: "Atrás",
+      edit: "Editar",
+      preview: "Vista previa",
+      save: "Guardar",
+      cancel: "Cancelar",
+      revert: "Revertir",
+      editedBadge: "Editado",
+      editedOnCloud: "Guardado en el servidor (sustituye el archivo de Pages).",
+      viewingPages: "Desde GitHub Pages.",
+      savedOk: "Guardado.",
+      revertedOk: "Revertido al archivo de Pages.",
+      saveFailed: "No se pudo guardar.",
+      revertConfirm: "¿Descartar las ediciones guardadas y volver al archivo original de Pages?",
       tabLogin: "Acceso",
       tabChat: "Chat",
       tabFiles: "Archivos",
@@ -365,7 +389,15 @@
     textViewer: document.querySelector("#text-viewer"),
     viewerBack: document.querySelector("#viewer-back"),
     viewerTitle: document.querySelector("#viewer-title"),
-    viewerBody: document.querySelector("#viewer-body")
+    viewerBody: document.querySelector("#viewer-body"),
+    viewerEditor: document.querySelector("#viewer-editor"),
+    viewerStatus: document.querySelector("#viewer-status"),
+    viewerBadge: document.querySelector("#viewer-badge"),
+    viewerEdit: document.querySelector("#viewer-edit"),
+    viewerPreview: document.querySelector("#viewer-preview"),
+    viewerSave: document.querySelector("#viewer-save"),
+    viewerCancel: document.querySelector("#viewer-cancel"),
+    viewerRevert: document.querySelector("#viewer-revert")
   };
 
   const state = {
@@ -381,8 +413,13 @@
     statusVars: {},
     roomSlug: "",
     files: [],
+    fileOverrides: {},
     mobileTab: "login",
     textViewerOpen: false,
+    textViewerName: "",
+    textViewerText: "",
+    textViewerOverride: false,
+    textViewerEditing: false,
     pageTitle: document.title,
     unreadCount: 0
   };
@@ -691,6 +728,13 @@
 
   function showFilesBrowser() {
     state.textViewerOpen = false;
+    state.textViewerEditing = false;
+    if (els.viewerEditor) {
+      els.viewerEditor.classList.add("hidden");
+    }
+    if (els.viewerBody) {
+      els.viewerBody.classList.remove("hidden");
+    }
     els.filesBrowser.classList.remove("hidden");
     els.textViewer.classList.add("hidden");
   }
@@ -720,16 +764,52 @@
     }
 
     els.fileList.innerHTML = state.files.map((file) => `
-      <button type="button" class="file-item" data-name="${escapeHtml(file.name)}" data-kind="${escapeHtml(file.kind)}" title="${escapeHtml(kindLabel(file.kind))}">
+      <button type="button" class="file-item${file.override ? " has-override" : ""}" data-name="${escapeHtml(file.name)}" data-kind="${escapeHtml(file.kind)}" title="${escapeHtml(kindLabel(file.kind))}">
         <span class="file-kind" aria-label="${escapeHtml(kindLabel(file.kind))}">${kindIcon(file.kind)}</span>
         <span class="file-name">${escapeHtml(file.name)}</span>
       </button>
     `).join("");
   }
 
+  async function loadFileOverrides() {
+    state.fileOverrides = {};
+    if (!state.connected || !els.room.value || !els.password.value) {
+      return;
+    }
+    try {
+      const data = await request(
+        `/chat/files?room=${encodeURIComponent(els.room.value)}`,
+        { method: "GET" }
+      );
+      const files = Array.isArray(data.files) ? data.files : [];
+      for (const file of files) {
+        if (file && file.name) {
+          state.fileOverrides[file.name] = file;
+        }
+      }
+    } catch {
+      state.fileOverrides = {};
+    }
+  }
+
+  function mergeOverrideFlags() {
+    const names = new Set(Object.keys(state.fileOverrides || {}));
+    state.files = state.files.map((file) => ({
+      ...file,
+      override: names.has(file.name)
+    }));
+    for (const name of names) {
+      if (!state.files.some((file) => file.name === name)) {
+        state.files.push({ name, kind: "text", override: true });
+      }
+    }
+    state.files.sort((a, b) => String(a.name).localeCompare(String(b.name)));
+  }
+
   async function loadRoomFiles() {
     state.roomSlug = currentRoomSlug();
     state.files = [];
+    state.fileOverrides = {};
     if (!state.connected || !state.roomSlug) {
       renderFileList();
       return;
@@ -745,21 +825,23 @@
       });
       if (response.status === 404) {
         state.files = [];
-        renderFileList();
-        return;
-      }
-      if (!response.ok) {
+      } else if (!response.ok) {
         throw new Error(`Files request failed (${response.status})`);
+      } else {
+        const data = await response.json();
+        const files = Array.isArray(data.files) ? data.files : [];
+        state.files = files
+          .filter((file) => file && file.name && file.kind)
+          .slice()
+          .sort((a, b) => String(a.name).localeCompare(String(b.name)));
       }
-      const data = await response.json();
-      const files = Array.isArray(data.files) ? data.files : [];
-      state.files = files
-        .filter((file) => file && file.name && file.kind)
-        .slice()
-        .sort((a, b) => String(a.name).localeCompare(String(b.name)));
+      await loadFileOverrides();
+      mergeOverrideFlags();
       renderFileList();
     } catch {
       state.files = [];
+      await loadFileOverrides();
+      mergeOverrideFlags();
       renderFileList();
     } finally {
       if (els.filesRefresh) {
@@ -780,29 +862,171 @@
     }
   }
 
+  function setViewerStatus(text) {
+    if (els.viewerStatus) {
+      els.viewerStatus.textContent = text || "";
+    }
+  }
+
+  function renderViewerContent(text, name) {
+    const lower = String(name || "").toLowerCase();
+    if ((lower.endsWith(".md") || lower.endsWith(".markdown")) &&
+        window.marked && typeof window.marked.parse === "function") {
+      els.viewerBody.innerHTML = window.marked.parse(text);
+    } else {
+      els.viewerBody.innerHTML = `<pre>${escapeHtml(text)}</pre>`;
+    }
+  }
+
+  function setViewerMode(mode) {
+    const editing = mode === "edit";
+    const previewing = mode === "preview";
+    state.textViewerEditing = editing || previewing;
+    els.viewerBody.classList.toggle("hidden", editing);
+    els.viewerEditor.classList.toggle("hidden", !editing);
+    els.viewerEdit.classList.toggle("hidden", editing);
+    els.viewerPreview.classList.toggle("hidden", !editing);
+    els.viewerSave.classList.toggle("hidden", !(editing || previewing));
+    els.viewerCancel.classList.toggle("hidden", !(editing || previewing));
+    if (els.viewerRevert) {
+      els.viewerRevert.classList.toggle(
+        "hidden",
+        editing || previewing || !state.textViewerOverride
+      );
+    }
+    if (els.viewerBadge) {
+      els.viewerBadge.classList.toggle("hidden", !state.textViewerOverride);
+    }
+  }
+
   async function openTextFile(name) {
     els.viewerTitle.textContent = name;
+    state.textViewerName = name;
+    state.textViewerText = "";
+    state.textViewerOverride = false;
+    state.textViewerEditing = false;
+    els.viewerEditor.value = "";
+    setViewerMode("view");
     els.viewerBody.innerHTML = `<p>${escapeHtml(t("loadingFiles"))}</p>`;
+    setViewerStatus("");
     showTextViewer();
 
     try {
-      const response = await fetch(fileUrl(name), { cache: "no-store" });
-      if (!response.ok) {
-        throw new Error(`Could not open ${name}`);
-      }
-      const text = await response.text();
-      const lower = name.toLowerCase();
-      if (lower.endsWith(".md") || lower.endsWith(".markdown")) {
-        if (window.marked && typeof window.marked.parse === "function") {
-          els.viewerBody.innerHTML = window.marked.parse(text);
-        } else {
-          els.viewerBody.innerHTML = `<pre>${escapeHtml(text)}</pre>`;
+      let text = "";
+      let fromOverride = false;
+      try {
+        const data = await request(
+          `/chat/files/${encodeURIComponent(name)}?room=${encodeURIComponent(els.room.value)}`,
+          { method: "GET" }
+        );
+        if (data.exists && typeof data.text === "string") {
+          text = data.text;
+          fromOverride = true;
         }
-      } else {
-        els.viewerBody.innerHTML = `<pre>${escapeHtml(text)}</pre>`;
+      } catch {
+        // Fall back to Pages if override lookup fails.
       }
+
+      if (!fromOverride) {
+        const response = await fetch(fileUrl(name), { cache: "no-store" });
+        if (!response.ok) {
+          throw new Error(`Could not open ${name}`);
+        }
+        text = await response.text();
+      }
+
+      state.textViewerText = text;
+      state.textViewerOverride = fromOverride;
+      els.viewerEditor.value = text;
+      renderViewerContent(text, name);
+      setViewerMode("view");
+      setViewerStatus(fromOverride ? t("editedOnCloud") : t("viewingPages"));
     } catch (error) {
       els.viewerBody.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
+      setViewerStatus("");
+    }
+  }
+
+  function startEditText() {
+    if (!state.textViewerName) {
+      return;
+    }
+    els.viewerEditor.value = state.textViewerText;
+    setViewerMode("edit");
+    els.viewerEditor.focus();
+  }
+
+  function previewEditText() {
+    const text = els.viewerEditor.value;
+    renderViewerContent(text, state.textViewerName);
+    setViewerMode("preview");
+  }
+
+  function cancelEditText() {
+    els.viewerEditor.value = state.textViewerText;
+    renderViewerContent(state.textViewerText, state.textViewerName);
+    setViewerMode("view");
+    setViewerStatus(state.textViewerOverride ? t("editedOnCloud") : t("viewingPages"));
+  }
+
+  async function saveEditText() {
+    if (!state.textViewerName || !state.connected) {
+      return;
+    }
+    const text = els.viewerEditor.value;
+    els.viewerSave.disabled = true;
+    setViewerStatus(t("loadingFiles"));
+    try {
+      const data = await request(`/chat/files/${encodeURIComponent(state.textViewerName)}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          room: els.room.value,
+          text,
+          author: els.author.value || t("guest")
+        })
+      });
+      state.textViewerText = typeof data.text === "string" ? data.text : text;
+      state.textViewerOverride = true;
+      state.fileOverrides[state.textViewerName] = {
+        name: state.textViewerName,
+        updatedAt: data.updatedAt || null,
+        updatedBy: data.updatedBy || ""
+      };
+      mergeOverrideFlags();
+      renderFileList();
+      renderViewerContent(state.textViewerText, state.textViewerName);
+      setViewerMode("view");
+      setViewerStatus(t("savedOk"));
+    } catch (error) {
+      setViewerStatus(error.message || t("saveFailed"));
+    } finally {
+      els.viewerSave.disabled = false;
+    }
+  }
+
+  async function revertTextFile() {
+    if (!state.textViewerName || !state.textViewerOverride) {
+      return;
+    }
+    if (!window.confirm(t("revertConfirm"))) {
+      return;
+    }
+    els.viewerRevert.disabled = true;
+    setViewerStatus(t("loadingFiles"));
+    try {
+      await request(`/chat/files/${encodeURIComponent(state.textViewerName)}`, {
+        method: "DELETE",
+        body: JSON.stringify({ room: els.room.value })
+      });
+      delete state.fileOverrides[state.textViewerName];
+      mergeOverrideFlags();
+      renderFileList();
+      await openTextFile(state.textViewerName);
+      setViewerStatus(t("revertedOk"));
+    } catch (error) {
+      setViewerStatus(error.message || t("saveFailed"));
+    } finally {
+      els.viewerRevert.disabled = false;
     }
   }
 
@@ -1253,7 +1477,19 @@
     loadRoomFiles();
   });
   els.viewerBack.addEventListener("click", () => {
+    if (state.textViewerEditing) {
+      cancelEditText();
+    }
     showFilesBrowser();
+  });
+  els.viewerEdit?.addEventListener("click", startEditText);
+  els.viewerPreview?.addEventListener("click", previewEditText);
+  els.viewerSave?.addEventListener("click", () => {
+    saveEditText().catch(() => {});
+  });
+  els.viewerCancel?.addEventListener("click", cancelEditText);
+  els.viewerRevert?.addEventListener("click", () => {
+    revertTextFile().catch(() => {});
   });
   els.mobileTabs.forEach((button) => {
     button.addEventListener("click", () => {

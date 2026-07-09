@@ -185,6 +185,25 @@ input:disabled {
   align-items: end;
 }
 
+.override-list {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #e2ddd3;
+  border-radius: 8px;
+  background: #faf8f3;
+}
+
+.override-list ul {
+  margin: 8px 0;
+  padding-left: 18px;
+}
+
+.override-list li {
+  margin: 8px 0;
+  display: grid;
+  gap: 6px;
+}
+
 @media (max-width: 760px) {
   #login-panel,
   .create-form,

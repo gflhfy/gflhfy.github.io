@@ -10,3 +10,8 @@
 #   https://gflhfy.github.io/collab/files/<slug>/
 #
 # @upload.bat skips itself. Remote files not present locally are removed.
+#
+# Text edits: collaborators can Edit/Save .md/.txt in the chat viewer. Those
+# saves live on Cloudflare and override the Pages copy until Revert (chat or
+# admin). Admin can Download / Export all edits, then paste into this folder
+# and re-run @upload.bat if you want them back in git/Pages.
