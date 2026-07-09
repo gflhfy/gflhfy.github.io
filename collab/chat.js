@@ -365,7 +365,8 @@
     statusVars: {},
     roomSlug: "",
     files: [],
-    mobileTab: "login"
+    mobileTab: "login",
+    textViewerOpen: false
   };
 
   function getUserId() {
@@ -416,6 +417,10 @@
       window.requestAnimationFrame(() => {
         els.messages.scrollTop = els.messages.scrollHeight;
       });
+    }
+    if (next === "files") {
+      // Keep markdown/text viewer open across tab switches; only Back closes it.
+      restoreFilesPanelView();
     }
   }
 
@@ -667,8 +672,23 @@
   }
 
   function showFilesBrowser() {
+    state.textViewerOpen = false;
     els.filesBrowser.classList.remove("hidden");
     els.textViewer.classList.add("hidden");
+  }
+
+  function showTextViewer() {
+    state.textViewerOpen = true;
+    els.filesBrowser.classList.add("hidden");
+    els.textViewer.classList.remove("hidden");
+  }
+
+  function restoreFilesPanelView() {
+    if (state.textViewerOpen) {
+      showTextViewer();
+    } else {
+      showFilesBrowser();
+    }
   }
 
   function renderFileList() {
@@ -745,8 +765,7 @@
   async function openTextFile(name) {
     els.viewerTitle.textContent = name;
     els.viewerBody.innerHTML = `<p>${escapeHtml(t("loadingFiles"))}</p>`;
-    els.filesBrowser.classList.add("hidden");
-    els.textViewer.classList.remove("hidden");
+    showTextViewer();
 
     try {
       const response = await fetch(fileUrl(name), { cache: "no-store" });

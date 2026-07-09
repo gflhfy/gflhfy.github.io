@@ -68,9 +68,15 @@ body {
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-rows: 1fr;
+  grid-template-rows: minmax(0, 1fr);
   border-left: 1px solid #d7d1c6;
   background: #f0eee8;
+}
+
+.files-panel > .files-browser,
+.files-panel > .text-viewer {
+  min-height: 0;
+  height: 100%;
 }
 
 .setup,
