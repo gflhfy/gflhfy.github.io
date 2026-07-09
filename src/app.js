@@ -39,6 +39,7 @@ const EPUB_THEME_RULES = {
 let activeBook = null;
 let activeRendition = null;
 let activeSlug = "";
+let activeLocale = "en";
 let activeToc = [];
 let lastLocation = null;
 let readerSettings = loadReaderSettings();
@@ -209,8 +210,18 @@ function updateProgressLabel(location) {
   els.settingsProgress.textContent = chapter ? `${pct}% · ${chapter}` : `${pct}% through book`;
 }
 
-function bookUrl(slug, file) {
-  return `${BOOKS_BASE}/${encodeURIComponent(slug)}/${file}`;
+function bookUrl(slug, locale, file) {
+  const loc = locale || "en";
+  return `${BOOKS_BASE}/${encodeURIComponent(slug)}/${encodeURIComponent(loc)}/${file}`;
+}
+
+function bookHash(slug, locale) {
+  const loc = locale || "en";
+  return `#book=${encodeURIComponent(slug)}&locale=${encodeURIComponent(loc)}`;
+}
+
+function locationStorageKey(slug, locale) {
+  return `gflhfy:${slug}:${locale || "en"}:location`;
 }
 
 function normalizeYoutubeUrl(raw) {
@@ -243,6 +254,7 @@ async function loadJson(url) {
 async function showLibrary() {
   destroyReader();
   activeSlug = "";
+  activeLocale = "en";
   activeToc = [];
   lastLocation = null;
   els.readerView.hidden = true;
@@ -267,9 +279,10 @@ function renderLibrary(books) {
 
   els.bookGrid.innerHTML = "";
   for (const book of books) {
+    const locale = book.locale || "en";
     const card = document.createElement("a");
     card.className = "book-card";
-    card.href = `#book=${encodeURIComponent(book.slug)}`;
+    card.href = bookHash(book.slug, locale);
 
     const img = document.createElement("img");
     img.src = book.cover || "";
@@ -280,35 +293,38 @@ function renderLibrary(books) {
     title.textContent = book.title || book.slug;
 
     const subtitle = document.createElement("p");
-    subtitle.textContent = book.subtitle || book.author || "";
+    const base = book.subtitle || book.author || "";
+    subtitle.textContent = locale === "en" ? base : (base ? `${base} · ${locale}` : locale);
 
     card.append(img, title, subtitle);
     els.bookGrid.append(card);
   }
 }
 
-async function showBook(slug) {
+async function showBook(slug, locale = "en") {
   activeSlug = slug;
+  activeLocale = locale || "en";
   els.libraryView.hidden = true;
   els.readerView.hidden = false;
   setStatus("Loading...");
 
   try {
-    const manifest = await loadJson(bookUrl(slug, "manifest.json"));
-    renderBookMetadata(slug, manifest);
-    await renderEpub(slug, manifest);
+    const manifest = await loadJson(bookUrl(slug, activeLocale, "manifest.json"));
+    renderBookMetadata(slug, activeLocale, manifest);
+    await renderEpub(slug, activeLocale, manifest);
   } catch (error) {
     setStatus(error.message);
   }
 }
 
-function renderBookMetadata(slug, manifest) {
+function renderBookMetadata(slug, locale, manifest) {
   els.bookTitle.textContent = manifest.title || slug;
-  els.bookSubtitle.textContent = manifest.subtitle || manifest.author || "";
+  const base = manifest.subtitle || manifest.author || "";
+  els.bookSubtitle.textContent = locale && locale !== "en" ? (base ? `${base} · ${locale}` : locale) : base;
   els.bookDescription.textContent = manifest.description || "";
 
   if (manifest.cover) {
-    els.bookCover.src = bookUrl(slug, manifest.cover);
+    els.bookCover.src = bookUrl(slug, locale, manifest.cover);
     els.bookCover.hidden = false;
   } else {
     els.bookCover.hidden = true;
@@ -324,11 +340,11 @@ function renderBookMetadata(slug, manifest) {
   }
 }
 
-async function renderEpub(slug, manifest) {
+async function renderEpub(slug, locale, manifest) {
   destroyReader();
 
   const epubPath = manifest.epub || "book.epub";
-  activeBook = ePub(bookUrl(slug, epubPath));
+  activeBook = ePub(bookUrl(slug, locale, epubPath));
   activeRendition = activeBook.renderTo("viewer", {
     width: "100%",
     height: "100%",
@@ -348,14 +364,14 @@ async function renderEpub(slug, manifest) {
 
   applyReaderSettingsToRendition(activeRendition);
 
-  const savedLocation = localStorage.getItem(`gflhfy:${slug}:location`);
+  const savedLocation = localStorage.getItem(locationStorageKey(slug, locale));
   await activeRendition.display(savedLocation || undefined);
   setStatus("");
 
   activeRendition.on("relocated", location => {
     lastLocation = location;
     if (location && location.start && location.start.cfi) {
-      localStorage.setItem(`gflhfy:${slug}:location`, location.start.cfi);
+      localStorage.setItem(locationStorageKey(slug, locale), location.start.cfi);
     }
     updateProgressLabel(location);
   });
@@ -396,9 +412,15 @@ function destroyReader() {
 }
 
 function route() {
-  const match = window.location.hash.match(/^#book=([^&]+)$/);
-  if (match) {
-    showBook(decodeURIComponent(match[1]));
+  const raw = window.location.hash.replace(/^#/, "");
+  if (!raw) {
+    showLibrary();
+    return;
+  }
+  const params = new URLSearchParams(raw.includes("=") ? raw : `book=${raw}`);
+  const slug = params.get("book");
+  if (slug) {
+    showBook(decodeURIComponent(slug), params.get("locale") || "en");
   } else {
     showLibrary();
   }

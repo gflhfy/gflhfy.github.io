@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GFL HFY Collab Chat</title>
+    <link rel="stylesheet" href="chat.css">
+  </head>
+  <body>
+    <main class="chat-shell">
+      <section class="setup" aria-label="Chat settings">
+        <label>
+          <span>Language</span>
+          <select id="language">
+            <option>English</option>
+            <option>Spanish</option>
+          </select>
+        </label>
+        <label>
+          <span>Name</span>
+          <input id="author" type="text" autocomplete="nickname" maxlength="80" placeholder="Your name">
+        </label>
+        <label>
+          <span>Room</span>
+          <input id="room" type="text" maxlength="80" value="main">
+        </label>
+        <label class="password-field">
+          <span>Password</span>
+          <input id="password" type="password" autocomplete="current-password">
+        </label>
+        <button id="connect" type="button">Connect</button>
+      </section>
+
+      <section class="status-row" aria-live="polite">
+        <span id="status">Not connected.</span>
+        <span id="users"></span>
+      </section>
+
+      <section id="messages" class="messages" aria-label="Messages"></section>
+
+      <form id="composer" class="composer">
+        <textarea id="message" rows="3" placeholder="Write a message..." disabled></textarea>
+        <button id="send" type="submit" disabled>Send</button>
+      </form>
+    </main>
+    <script src="chat.js"></script>
+  </body>
+</html>
+

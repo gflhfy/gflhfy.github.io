@@ -1,105 +1,115 @@
 ﻿{
-    "generatedAt":  "2026-07-08T21:08:32Z",
+    "generatedAt":  "2026-07-09T02:05:58Z",
     "books":  [
                   {
                       "slug":  "patagonia-lights",
+                      "locale":  "en",
                       "title":  "The Lights Over Trapalanda",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
                       "description":  "A UAP investigator follows a missing hiker case into the Patagonia legend of Trapalanda, the lost City of the Caesars.",
-                      "cover":  "public/books/patagonia-lights/cover.png",
-                      "epub":  "public/books/patagonia-lights/book.epub",
-                      "manifest":  "public/books/patagonia-lights/manifest.json"
+                      "cover":  "public/books/patagonia-lights/en/cover.png",
+                      "epub":  "public/books/patagonia-lights/en/book.epub",
+                      "manifest":  "public/books/patagonia-lights/en/manifest.json"
                   },
                   {
                       "slug":  "mira-keen-1",
+                      "locale":  "en",
                       "title":  "Mira Keen: Pathways of Presence",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
                       "description":  "Mira Keen is the first human at the Integrator Academy on Erra — and her telepathy has not learned manners yet.",
-                      "cover":  "public/books/mira-keen-1/cover.png",
-                      "epub":  "public/books/mira-keen-1/book.epub",
-                      "manifest":  "public/books/mira-keen-1/manifest.json"
+                      "cover":  "public/books/mira-keen-1/en/cover.png",
+                      "epub":  "public/books/mira-keen-1/en/book.epub",
+                      "manifest":  "public/books/mira-keen-1/en/manifest.json"
                   },
                   {
                       "slug":  "starship-upgrade",
+                      "locale":  "en",
                       "title":  "Starthip Upgrade",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
                       "description":  "A silent craft lands in Elon\u0027s Starbase yard while he\u0027s up late on Diablo IV. Then Starship flies again—with hidden engines nobody can explain.",
-                      "cover":  "public/books/starship-upgrade/cover.png",
-                      "epub":  "public/books/starship-upgrade/book.epub",
-                      "manifest":  "public/books/starship-upgrade/manifest.json"
+                      "cover":  "public/books/starship-upgrade/en/cover.png",
+                      "epub":  "public/books/starship-upgrade/en/book.epub",
+                      "manifest":  "public/books/starship-upgrade/en/manifest.json"
                   },
                   {
                       "slug":  "twins-1",
+                      "locale":  "en",
                       "title":  "Twins",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
                       "description":  "Identical twin sisters Cheyenne and Cynthia share a Denver apartment — until the Shift splits Earth in two.",
-                      "cover":  "public/books/twins-1/cover.png",
-                      "epub":  "public/books/twins-1/book.epub",
-                      "manifest":  "public/books/twins-1/manifest.json"
+                      "cover":  "public/books/twins-1/en/cover.png",
+                      "epub":  "public/books/twins-1/en/book.epub",
+                      "manifest":  "public/books/twins-1/en/manifest.json"
                   },
                   {
                       "slug":  "the-nine",
+                      "locale":  "en",
                       "title":  "The Nine",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
                       "description":  "Book: The Nine",
-                      "cover":  "public/books/the-nine/cover.png",
-                      "epub":  "public/books/the-nine/book.epub",
-                      "manifest":  "public/books/the-nine/manifest.json"
-                  },
-                  {
-                      "slug":  "crystal-cave",
-                      "title":  "Crystal Cave",
-                      "subtitle":  "A GFL HFY read-aloud story",
-                      "author":  "GFL HFY",
-                      "description":  "Shelia Parks finds a hidden crystal door in Colorado. It opens onto a Hema colony under twin suns — and her way home is not the whole story.",
-                      "cover":  "public/books/crystal-cave/cover.png",
-                      "epub":  "public/books/crystal-cave/book.epub",
-                      "manifest":  "public/books/crystal-cave/manifest.json"
-                  },
-                  {
-                      "slug":  "life-unloop",
-                      "title":  "A LifeUnloop Story",
-                      "subtitle":  "A GFL HFY read-aloud story",
-                      "author":  "GFL HFY",
-                      "description":  "Daniel changes one small habit each day, and the ordinary life that held him starts to loosen.",
-                      "cover":  "public/books/life-unloop/cover.png",
-                      "epub":  "public/books/life-unloop/book.epub",
-                      "manifest":  "public/books/life-unloop/manifest.json"
+                      "cover":  "public/books/the-nine/en/cover.png",
+                      "epub":  "public/books/the-nine/en/book.epub",
+                      "manifest":  "public/books/the-nine/en/manifest.json"
                   },
                   {
                       "slug":  "dandelion-mirror",
+                      "locale":  "en",
                       "title":  "The Dandelion Mirror",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
                       "description":  "Book: The Dandelion Mirror",
-                      "cover":  "public/books/dandelion-mirror/cover.png",
-                      "epub":  "public/books/dandelion-mirror/book.epub",
-                      "manifest":  "public/books/dandelion-mirror/manifest.json"
+                      "cover":  "public/books/dandelion-mirror/en/cover.png",
+                      "epub":  "public/books/dandelion-mirror/en/book.epub",
+                      "manifest":  "public/books/dandelion-mirror/en/manifest.json"
                   },
                   {
-                      "slug":  "mermaid-timeline",
-                      "title":  "Mermaid Timeline",
+                      "slug":  "crystal-cave",
+                      "locale":  "en",
+                      "title":  "Crystal Cave",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
-                      "description":  "A Patagonia man follows an impossible heart desire through a coastal cave into a 5D Earth timeline where a radiant mermaid woman is waiting.",
-                      "cover":  "public/books/mermaid-timeline/cover.png",
-                      "epub":  "public/books/mermaid-timeline/book.epub",
-                      "manifest":  "public/books/mermaid-timeline/manifest.json"
+                      "description":  "Shelia Parks finds a hidden crystal door in Colorado. It opens onto a Hema colony under twin suns — and her way home is not the whole story.",
+                      "cover":  "public/books/crystal-cave/en/cover.png",
+                      "epub":  "public/books/crystal-cave/en/book.epub",
+                      "manifest":  "public/books/crystal-cave/en/manifest.json"
                   },
                   {
                       "slug":  "free-energy",
+                      "locale":  "en",
                       "title":  "Free Energy",
                       "subtitle":  "A GFL HFY read-aloud story",
                       "author":  "GFL HFY",
                       "description":  "A lone inventor finally gets free energy working in his bus. Then the people who buried the truth come knocking.",
-                      "cover":  "public/books/free-energy/cover.png",
-                      "epub":  "public/books/free-energy/book.epub",
-                      "manifest":  "public/books/free-energy/manifest.json"
+                      "cover":  "public/books/free-energy/en/cover.png",
+                      "epub":  "public/books/free-energy/en/book.epub",
+                      "manifest":  "public/books/free-energy/en/manifest.json"
+                  },
+                  {
+                      "slug":  "mermaid-timeline",
+                      "locale":  "en",
+                      "title":  "Mermaid Timeline",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "A Patagonia man follows an impossible heart desire through a coastal cave into a 5D Earth timeline where a radiant mermaid woman is waiting.",
+                      "cover":  "public/books/mermaid-timeline/en/cover.png",
+                      "epub":  "public/books/mermaid-timeline/en/book.epub",
+                      "manifest":  "public/books/mermaid-timeline/en/manifest.json"
+                  },
+                  {
+                      "slug":  "life-unloop",
+                      "locale":  "en",
+                      "title":  "A LifeUnloop Story",
+                      "subtitle":  "A GFL HFY read-aloud story",
+                      "author":  "GFL HFY",
+                      "description":  "Daniel changes one small habit each day, and the ordinary life that held him starts to loosen.",
+                      "cover":  "public/books/life-unloop/en/cover.png",
+                      "epub":  "public/books/life-unloop/en/book.epub",
+                      "manifest":  "public/books/life-unloop/en/manifest.json"
                   }
               ]
 }
