@@ -48,6 +48,9 @@
       filesHeading: "Files",
       refreshFiles: "Refresh",
       back: "Back",
+      tabLogin: "Login",
+      tabChat: "Chat",
+      tabFiles: "Files",
       kindAudio: "Audio",
       kindVideo: "Video",
       kindText: "Text"
@@ -83,6 +86,9 @@
       filesHeading: "Archivos",
       refreshFiles: "Actualizar",
       back: "Atrás",
+      tabLogin: "Acceso",
+      tabChat: "Chat",
+      tabFiles: "Archivos",
       kindAudio: "Audio",
       kindVideo: "Video",
       kindText: "Texto"
@@ -118,6 +124,9 @@
       filesHeading: "Fichiers",
       refreshFiles: "Actualiser",
       back: "Retour",
+      tabLogin: "Connexion",
+      tabChat: "Chat",
+      tabFiles: "Fichiers",
       kindAudio: "Audio",
       kindVideo: "Vidéo",
       kindText: "Texte"
@@ -153,6 +162,9 @@
       filesHeading: "फ़ाइलें",
       refreshFiles: "रीफ़्रेश",
       back: "वापस",
+      tabLogin: "लॉगिन",
+      tabChat: "चैट",
+      tabFiles: "फ़ाइलें",
       kindAudio: "ऑडियो",
       kindVideo: "वीडियो",
       kindText: "पाठ"
@@ -188,6 +200,9 @@
       filesHeading: "File",
       refreshFiles: "Aggiorna",
       back: "Indietro",
+      tabLogin: "Accesso",
+      tabChat: "Chat",
+      tabFiles: "File",
       kindAudio: "Audio",
       kindVideo: "Video",
       kindText: "Testo"
@@ -223,6 +238,9 @@
       filesHeading: "ファイル",
       refreshFiles: "更新",
       back: "戻る",
+      tabLogin: "ログイン",
+      tabChat: "チャット",
+      tabFiles: "ファイル",
       kindAudio: "音声",
       kindVideo: "動画",
       kindText: "テキスト"
@@ -258,6 +276,9 @@
       filesHeading: "Arquivos",
       refreshFiles: "Atualizar",
       back: "Voltar",
+      tabLogin: "Entrar",
+      tabChat: "Chat",
+      tabFiles: "Arquivos",
       kindAudio: "Áudio",
       kindVideo: "Vídeo",
       kindText: "Texto"
@@ -293,6 +314,9 @@
       filesHeading: "文件",
       refreshFiles: "刷新",
       back: "返回",
+      tabLogin: "登录",
+      tabChat: "聊天",
+      tabFiles: "文件",
       kindAudio: "音频",
       kindVideo: "视频",
       kindText: "文本"
@@ -303,6 +327,8 @@
   const layoutKey = "gflhfy-collab-chat-width";
 
   const els = {
+    appShell: document.querySelector(".app-shell"),
+    mobileTabs: document.querySelectorAll(".mobile-tab"),
     language: document.querySelector("#language"),
     author: document.querySelector("#author"),
     room: document.querySelector("#room"),
@@ -338,7 +364,8 @@
     statusKey: "notConnected",
     statusVars: {},
     roomSlug: "",
-    files: []
+    files: [],
+    mobileTab: "login"
   };
 
   function getUserId() {
@@ -370,6 +397,29 @@
 
   function translateLanguageName() {
     return selectedLanguage().translateAs;
+  }
+
+  function isMobileLayout() {
+    return window.matchMedia("(max-width: 900px)").matches;
+  }
+
+  function setMobileTab(tab) {
+    const next = tab === "chat" || tab === "files" ? tab : "login";
+    state.mobileTab = next;
+    if (els.appShell) {
+      els.appShell.setAttribute("data-mobile-tab", next);
+    }
+    els.mobileTabs.forEach((button) => {
+      button.classList.toggle("is-active", button.getAttribute("data-tab") === next);
+    });
+    if (next === "chat") {
+      window.requestAnimationFrame(() => {
+        els.messages.scrollTop = els.messages.scrollHeight;
+      });
+    }
+    if (next === "files") {
+      showFilesBrowser();
+    }
   }
 
   function applyUi() {
@@ -816,6 +866,9 @@
     els.audioTitle.textContent = t("noAudio");
     showFilesBrowser();
     renderFileList();
+    if (isMobileLayout()) {
+      setMobileTab("login");
+    }
     if (messageKeyOrText) {
       if (UI.en[messageKeyOrText] || uiBundle()[messageKeyOrText]) {
         setStatusKey(messageKeyOrText, vars);
@@ -990,6 +1043,9 @@
       await sendPresence();
       await poll();
       await loadRoomFiles();
+      if (isMobileLayout()) {
+        setMobileTab("chat");
+      }
       state.timer = window.setInterval(() => {
         sendPresence().catch(handleRuntimeError);
         poll();
@@ -1078,8 +1134,14 @@
     showFilesBrowser();
     renderFileList();
   });
+  els.mobileTabs.forEach((button) => {
+    button.addEventListener("click", () => {
+      setMobileTab(button.getAttribute("data-tab"));
+    });
+  });
 
   setupSplitter();
+  setMobileTab("login");
   const preferredRoom = loadSettings();
   applyUi();
   renderFileList();

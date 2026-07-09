@@ -8,9 +8,15 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
   <body>
-    <div class="app-shell">
-      <main class="chat-pane">
-        <section class="setup" aria-label="Chat settings">
+    <div class="app-shell" data-mobile-tab="login">
+      <nav class="mobile-tabs" aria-label="Views">
+        <button type="button" class="mobile-tab is-active" data-tab="login" data-i18n="tabLogin">Login</button>
+        <button type="button" class="mobile-tab" data-tab="chat" data-i18n="tabChat">Chat</button>
+        <button type="button" class="mobile-tab" data-tab="files" data-i18n="tabFiles">Files</button>
+      </nav>
+
+      <section id="panel-login" class="login-panel mobile-panel" data-panel="login" aria-label="Login">
+        <div class="setup">
           <label>
             <span data-i18n="yourLanguage">Your language</span>
             <select id="language"></select>
@@ -30,8 +36,10 @@
             <input id="password" type="password" autocomplete="current-password">
           </label>
           <button id="connect" type="button" data-i18n="connect">Connect</button>
-        </section>
+        </div>
+      </section>
 
+      <main id="panel-chat" class="chat-panel mobile-panel" data-panel="chat" aria-label="Chat">
         <section class="status-row" aria-live="polite">
           <span id="status" data-i18n="notConnected">Not connected.</span>
           <span id="users"></span>
@@ -47,7 +55,7 @@
 
       <div id="splitter" class="splitter" role="separator" aria-orientation="vertical" aria-label="Resize panels" tabindex="0"></div>
 
-      <aside class="files-pane" aria-label="Room files">
+      <aside id="panel-files" class="files-panel mobile-panel" data-panel="files" aria-label="Room files">
         <section id="files-browser" class="files-browser">
           <div class="files-toolbar">
             <span class="files-heading" data-i18n="filesHeading">Files</span>

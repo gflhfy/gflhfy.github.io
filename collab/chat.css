@@ -18,24 +18,36 @@ body {
 .app-shell {
   display: grid;
   grid-template-columns: minmax(280px, var(--chat-width)) 8px minmax(240px, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   min-height: 100vh;
   height: 100vh;
 }
 
-.chat-pane,
-.files-pane {
+.mobile-tabs {
+  display: none;
+}
+
+.login-panel {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  padding: 14px 14px 0;
+}
+
+.chat-panel {
+  grid-column: 1;
+  grid-row: 2;
   min-width: 0;
   min-height: 0;
   display: grid;
-}
-
-.chat-pane {
-  grid-template-rows: auto auto 1fr auto;
-  padding: 14px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: 10px 14px 14px;
   gap: 10px;
 }
 
 .splitter {
+  grid-column: 2;
+  grid-row: 1 / -1;
   cursor: col-resize;
   background: #d7d1c6;
   border: 0;
@@ -50,7 +62,12 @@ body {
   outline: none;
 }
 
-.files-pane {
+.files-panel {
+  grid-column: 3;
+  grid-row: 1 / -1;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
   grid-template-rows: 1fr;
   border-left: 1px solid #d7d1c6;
   background: #f0eee8;
@@ -354,31 +371,97 @@ textarea {
 
 @media (max-width: 900px) {
   .app-shell {
-    display: block;
-    height: auto;
-    min-height: 100vh;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  .mobile-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column: 1;
+    grid-row: 1;
+    gap: 6px;
+    padding: 10px;
+    background: #ebe7df;
+    border-bottom: 1px solid #d7d1c6;
+  }
+
+  .mobile-tab {
+    border: 1px solid #cfc8bb;
+    border-radius: 8px;
+    background: #f7f4ee;
+    color: #243035;
+    padding: 10px 8px;
+    font-weight: 700;
+  }
+
+  .mobile-tab.is-active {
+    background: #176b63;
+    border-color: #176b63;
+    color: #fff;
   }
 
   .splitter {
     display: none;
   }
 
-  .chat-pane {
-    min-height: 70vh;
+  .login-panel,
+  .chat-panel,
+  .files-panel {
+    grid-column: 1;
+    grid-row: 2;
+    min-height: 0;
+    height: 100%;
+    overflow: hidden;
+    border: 0;
+    padding: 12px;
   }
 
-  .files-pane {
-    border-left: 0;
-    border-top: 1px solid #d7d1c6;
-    min-height: 50vh;
+  .files-panel {
+    background: #f0eee8;
+  }
+
+  .app-shell[data-mobile-tab="login"] .login-panel,
+  .app-shell[data-mobile-tab="chat"] .chat-panel,
+  .app-shell[data-mobile-tab="files"] .files-panel {
+    display: grid;
+  }
+
+  .app-shell[data-mobile-tab="login"] .chat-panel,
+  .app-shell[data-mobile-tab="login"] .files-panel,
+  .app-shell[data-mobile-tab="chat"] .login-panel,
+  .app-shell[data-mobile-tab="chat"] .files-panel,
+  .app-shell[data-mobile-tab="files"] .login-panel,
+  .app-shell[data-mobile-tab="files"] .chat-panel {
+    display: none !important;
+  }
+
+  .login-panel {
+    align-content: start;
   }
 
   .setup {
     grid-template-columns: 1fr 1fr;
   }
 
-  .password-field {
+  .password-field,
+  #connect {
     grid-column: 1 / -1;
+  }
+
+  .chat-panel {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .files-panel {
+    grid-template-rows: minmax(0, 1fr);
+  }
+
+  .text-viewer {
+    margin: 0;
+    height: 100%;
   }
 }
 
@@ -401,9 +484,25 @@ textarea {
     color: #f3f0e8;
   }
 
-  .files-pane {
+  .files-panel {
     background: #151a1d;
     border-color: #333b40;
+  }
+
+  .mobile-tabs {
+    background: #151a1d;
+    border-color: #333b40;
+  }
+
+  .mobile-tab {
+    background: #1b2124;
+    border-color: #333b40;
+    color: #f3f0e8;
+  }
+
+  .mobile-tab.is-active {
+    background: #176b63;
+    border-color: #176b63;
   }
 
   .setup,
