@@ -21,6 +21,7 @@
     connected: false,
     latestId: 0,
     timer: null,
+    pollInFlight: null,
     userId: getUserId(),
     messages: [],
     sessionVersion: null,
@@ -242,31 +243,62 @@
     }
   }
 
+  function mergeMessages(incoming) {
+    if (!Array.isArray(incoming) || !incoming.length) {
+      return false;
+    }
+
+    const seen = new Set(state.messages.map((message) => message.id));
+    let added = false;
+    for (const message of incoming) {
+      if (seen.has(message.id)) {
+        continue;
+      }
+      seen.add(message.id);
+      state.messages.push(message);
+      added = true;
+      if (message.id > state.latestId) {
+        state.latestId = message.id;
+      }
+    }
+
+    if (added) {
+      state.messages = state.messages.slice(-200);
+    }
+    return added;
+  }
+
   async function poll() {
     if (!state.connected) {
       return;
     }
-
-    try {
-      const params = new URLSearchParams({
-        room: roomName(),
-        language: els.language.value,
-        after: String(state.latestId),
-        limit: "100"
-      });
-      const data = await request(`/chat/messages?${params.toString()}`, { method: "GET" });
-      checkSession(data);
-      if (data.messages && data.messages.length) {
-        state.messages.push(...data.messages);
-        state.messages = state.messages.slice(-200);
-        state.latestId = data.latestId || state.messages[state.messages.length - 1].id;
-        renderMessages();
-      }
-      renderUsers(data.users);
-      setStatus(`Connected to ${roomName()}.`);
-    } catch (error) {
-      handleRuntimeError(error);
+    if (state.pollInFlight) {
+      return state.pollInFlight;
     }
+
+    state.pollInFlight = (async () => {
+      try {
+        const params = new URLSearchParams({
+          room: roomName(),
+          language: els.language.value,
+          after: String(state.latestId),
+          limit: "100"
+        });
+        const data = await request(`/chat/messages?${params.toString()}`, { method: "GET" });
+        checkSession(data);
+        if (mergeMessages(data.messages)) {
+          renderMessages();
+        }
+        renderUsers(data.users);
+        setStatus(`Connected to ${roomName()}.`);
+      } catch (error) {
+        handleRuntimeError(error);
+      } finally {
+        state.pollInFlight = null;
+      }
+    })();
+
+    return state.pollInFlight;
   }
 
   function handleRuntimeError(error) {
@@ -307,7 +339,7 @@
       await poll();
       state.timer = window.setInterval(() => {
         sendPresence().catch(handleRuntimeError);
-        poll().catch(handleRuntimeError);
+        poll();
       }, pollMs);
     } catch (error) {
       disconnect(error.message);
