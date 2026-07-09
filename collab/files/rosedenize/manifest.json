@@ -1,7 +1,15 @@
 ﻿{
     "room":  "rosedenize",
-    "updatedAt":  "2026-07-09T19:04:24.6532572Z",
+    "updatedAt":  "2026-07-09T19:15:53.5379757Z",
     "files":  [
+                  {
+                      "name":  "002_The_Cave.md",
+                      "kind":  "text"
+                  },
+                  {
+                      "name":  "002_The_Cave.mp4",
+                      "kind":  "video"
+                  },
                   {
                       "name":  "outro_dora.wav",
                       "kind":  "audio"
