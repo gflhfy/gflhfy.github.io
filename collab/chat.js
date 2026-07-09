@@ -391,10 +391,8 @@
     viewerTitle: document.querySelector("#viewer-title"),
     viewerBody: document.querySelector("#viewer-body"),
     viewerEditor: document.querySelector("#viewer-editor"),
-    viewerStatus: document.querySelector("#viewer-status"),
     viewerBadge: document.querySelector("#viewer-badge"),
     viewerEdit: document.querySelector("#viewer-edit"),
-    viewerPreview: document.querySelector("#viewer-preview"),
     viewerSave: document.querySelector("#viewer-save"),
     viewerCancel: document.querySelector("#viewer-cancel"),
     viewerRevert: document.querySelector("#viewer-revert")
@@ -862,12 +860,6 @@
     }
   }
 
-  function setViewerStatus(text) {
-    if (els.viewerStatus) {
-      els.viewerStatus.textContent = text || "";
-    }
-  }
-
   function renderViewerContent(text, name) {
     const lower = String(name || "").toLowerCase();
     if ((lower.endsWith(".md") || lower.endsWith(".markdown")) &&
@@ -880,19 +872,14 @@
 
   function setViewerMode(mode) {
     const editing = mode === "edit";
-    const previewing = mode === "preview";
-    state.textViewerEditing = editing || previewing;
+    state.textViewerEditing = editing;
     els.viewerBody.classList.toggle("hidden", editing);
     els.viewerEditor.classList.toggle("hidden", !editing);
     els.viewerEdit.classList.toggle("hidden", editing);
-    els.viewerPreview.classList.toggle("hidden", !editing);
-    els.viewerSave.classList.toggle("hidden", !(editing || previewing));
-    els.viewerCancel.classList.toggle("hidden", !(editing || previewing));
+    els.viewerSave.classList.toggle("hidden", !editing);
+    els.viewerCancel.classList.toggle("hidden", !editing);
     if (els.viewerRevert) {
-      els.viewerRevert.classList.toggle(
-        "hidden",
-        editing || previewing || !state.textViewerOverride
-      );
+      els.viewerRevert.classList.toggle("hidden", editing || !state.textViewerOverride);
     }
     if (els.viewerBadge) {
       els.viewerBadge.classList.toggle("hidden", !state.textViewerOverride);
@@ -908,7 +895,6 @@
     els.viewerEditor.value = "";
     setViewerMode("view");
     els.viewerBody.innerHTML = `<p>${escapeHtml(t("loadingFiles"))}</p>`;
-    setViewerStatus("");
     showTextViewer();
 
     try {
@@ -940,10 +926,8 @@
       els.viewerEditor.value = text;
       renderViewerContent(text, name);
       setViewerMode("view");
-      setViewerStatus(fromOverride ? t("editedOnCloud") : t("viewingPages"));
     } catch (error) {
       els.viewerBody.innerHTML = `<p>${escapeHtml(error.message)}</p>`;
-      setViewerStatus("");
     }
   }
 
@@ -956,17 +940,10 @@
     els.viewerEditor.focus();
   }
 
-  function previewEditText() {
-    const text = els.viewerEditor.value;
-    renderViewerContent(text, state.textViewerName);
-    setViewerMode("preview");
-  }
-
   function cancelEditText() {
     els.viewerEditor.value = state.textViewerText;
     renderViewerContent(state.textViewerText, state.textViewerName);
     setViewerMode("view");
-    setViewerStatus(state.textViewerOverride ? t("editedOnCloud") : t("viewingPages"));
   }
 
   async function saveEditText() {
@@ -975,7 +952,6 @@
     }
     const text = els.viewerEditor.value;
     els.viewerSave.disabled = true;
-    setViewerStatus(t("loadingFiles"));
     try {
       const data = await request(`/chat/files/${encodeURIComponent(state.textViewerName)}`, {
         method: "PUT",
@@ -996,9 +972,8 @@
       renderFileList();
       renderViewerContent(state.textViewerText, state.textViewerName);
       setViewerMode("view");
-      setViewerStatus(t("savedOk"));
     } catch (error) {
-      setViewerStatus(error.message || t("saveFailed"));
+      window.alert(error.message || t("saveFailed"));
     } finally {
       els.viewerSave.disabled = false;
     }
@@ -1012,7 +987,6 @@
       return;
     }
     els.viewerRevert.disabled = true;
-    setViewerStatus(t("loadingFiles"));
     try {
       await request(`/chat/files/${encodeURIComponent(state.textViewerName)}`, {
         method: "DELETE",
@@ -1022,9 +996,8 @@
       mergeOverrideFlags();
       renderFileList();
       await openTextFile(state.textViewerName);
-      setViewerStatus(t("revertedOk"));
     } catch (error) {
-      setViewerStatus(error.message || t("saveFailed"));
+      window.alert(error.message || t("saveFailed"));
     } finally {
       els.viewerRevert.disabled = false;
     }
@@ -1483,7 +1456,6 @@
     showFilesBrowser();
   });
   els.viewerEdit?.addEventListener("click", startEditText);
-  els.viewerPreview?.addEventListener("click", previewEditText);
   els.viewerSave?.addEventListener("click", () => {
     saveEditText().catch(() => {});
   });
