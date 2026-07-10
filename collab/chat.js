@@ -40,7 +40,6 @@
       roomChanged: "Room changed. Connect again.",
       passwordChanged: "Room password changed. Enter the new password and connect again.",
       original: "Original {language}",
-      translatedFrom: "Translated from {language}",
       guest: "Guest",
       noAudio: "No audio selected",
       connectForFiles: "Connect to a room to see files.",
@@ -93,7 +92,6 @@
       roomChanged: "Sala cambiada. Conéctate de nuevo.",
       passwordChanged: "La contraseña de la sala cambió. Introduce la nueva y conéctate de nuevo.",
       original: "Original {language}",
-      translatedFrom: "Traducido del {language}",
       guest: "Invitado",
       noAudio: "Ningún audio seleccionado",
       connectForFiles: "Conéctate a una sala para ver archivos.",
@@ -146,7 +144,6 @@
       roomChanged: "Salle changée. Reconnectez-vous.",
       passwordChanged: "Le mot de passe de la salle a changé. Entrez le nouveau et reconnectez-vous.",
       original: "Original {language}",
-      translatedFrom: "Traduit de {language}",
       guest: "Invité",
       noAudio: "Aucun audio sélectionné",
       connectForFiles: "Connectez-vous à une salle pour voir les fichiers.",
@@ -187,7 +184,6 @@
       roomChanged: "कमरा बदल गया। फिर से कनेक्ट करें।",
       passwordChanged: "कमरे का पासवर्ड बदल गया। नया पासवर्ड डालकर फिर कनेक्ट करें।",
       original: "मूल {language}",
-      translatedFrom: "{language} से अनुवादित",
       guest: "अतिथि",
       noAudio: "कोई ऑडियो चयनित नहीं",
       connectForFiles: "फ़ाइलें देखने के लिए एक कमरे से कनेक्ट करें।",
@@ -228,7 +224,6 @@
       roomChanged: "Stanza cambiata. Riconnettiti.",
       passwordChanged: "La password della stanza è cambiata. Inserisci la nuova e riconnettiti.",
       original: "Originale {language}",
-      translatedFrom: "Tradotto da {language}",
       guest: "Ospite",
       noAudio: "Nessun audio selezionato",
       connectForFiles: "Connettiti a una stanza per vedere i file.",
@@ -269,7 +264,6 @@
       roomChanged: "ルームが変わりました。もう一度接続してください。",
       passwordChanged: "ルームパスワードが変更されました。新しいパスワードを入力して再接続してください。",
       original: "原文 {language}",
-      translatedFrom: "{language} からの翻訳",
       guest: "ゲスト",
       noAudio: "音声未選択",
       connectForFiles: "ファイルを見るにはルームに接続してください。",
@@ -310,7 +304,6 @@
       roomChanged: "Sala alterada. Conecte novamente.",
       passwordChanged: "A senha da sala mudou. Digite a nova senha e conecte novamente.",
       original: "Original {language}",
-      translatedFrom: "Traduzido de {language}",
       guest: "Convidado",
       noAudio: "Nenhum áudio selecionado",
       connectForFiles: "Conecte-se a uma sala para ver os arquivos.",
@@ -351,7 +344,6 @@
       roomChanged: "房间已更改。请重新连接。",
       passwordChanged: "房间密码已更改。请输入新密码并重新连接。",
       original: "原文 {language}",
-      translatedFrom: "译自 {language}",
       guest: "访客",
       noAudio: "未选择音频",
       connectForFiles: "连接房间后可查看文件。",
@@ -678,9 +670,6 @@
       const original = message.translated
         ? `<details><summary>${escapeHtml(t("original", { language: message.sourceLanguage }))}</summary><div class="original-text">${escapeHtml(message.sourceText)}</div></details>`
         : "";
-      const note = message.translated
-        ? `<div class="translation-note">${escapeHtml(t("translatedFrom", { language: message.sourceLanguage }))}</div>`
-        : "";
       return `
         <article class="message${own ? " own" : ""}">
           <div class="message-meta">
@@ -688,7 +677,6 @@
             <span data-created-at="${escapeHtml(message.createdAt)}">${escapeHtml(formatMessageTime(message.createdAt))}</span>
           </div>
           <div class="message-text">${escapeHtml(message.displayText)}</div>
-          ${note}
           ${original}
         </article>
       `;

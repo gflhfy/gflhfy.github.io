@@ -191,12 +191,6 @@ textarea:disabled {
   line-height: 1.45;
 }
 
-.translation-note {
-  margin-top: 8px;
-  color: #5d6a70;
-  font-size: 12px;
-}
-
 details {
   margin-top: 8px;
 }
@@ -612,7 +606,6 @@ textarea {
   label span,
   .status-row,
   .message-meta,
-  .translation-note,
   .audio-title,
   .files-heading,
   .files-empty {
