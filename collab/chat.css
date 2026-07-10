@@ -174,6 +174,7 @@ textarea:disabled {
 
 .message-meta {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 8px;
@@ -184,8 +185,19 @@ textarea:disabled {
 .message-meta-end {
   display: inline-flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 8px;
-  flex-shrink: 0;
+  flex: 0 0 auto;
+  min-width: 13.5rem;
+  white-space: nowrap;
+}
+
+.message-meta-end [data-created-at] {
+  display: inline-block;
+  min-width: 9.75rem;
+  white-space: nowrap;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .message-like {
@@ -200,6 +212,8 @@ textarea:disabled {
   font: inherit;
   line-height: 1;
   cursor: pointer;
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .message-like.is-readonly {
@@ -228,6 +242,10 @@ textarea:disabled {
 .message-author {
   color: #243035;
   font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .message-text,
@@ -627,8 +645,7 @@ textarea {
     flex-wrap: wrap;
   }
 
-  .status-row,
-  .message-meta {
+  .status-row {
     display: grid;
   }
 }
