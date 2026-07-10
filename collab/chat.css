@@ -181,6 +181,50 @@ textarea:disabled {
   font-size: 12px;
 }
 
+.message-meta-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.message-like {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #647077;
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.message-like.is-readonly {
+  cursor: default;
+}
+
+.message-like-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.message-like:not(.is-liked) .message-like-icon {
+  color: #8a9499;
+}
+
+.message-like.is-liked .message-like-icon,
+.message-like.is-readonly .message-like-icon {
+  filter: none;
+}
+
+.message-like-count {
+  min-width: 0.75em;
+  font-variant-numeric: tabular-nums;
+}
+
 .message-author {
   color: #243035;
   font-weight: 700;
@@ -642,9 +686,14 @@ textarea {
   label span,
   .status-row,
   .message-meta,
+  .message-like,
   .audio-title,
   .files-heading,
   .files-empty {
+    color: #a8b0b5;
+  }
+
+  .message-like:not(.is-liked) .message-like-icon {
     color: #a8b0b5;
   }
 

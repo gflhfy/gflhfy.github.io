@@ -28,6 +28,8 @@
       reconnect: "Reconnect",
       send: "Send",
       emoji: "Emoji",
+      like: "Like",
+      unlike: "Unlike",
       messagePlaceholder: "Write a message...",
       notConnected: "Not connected.",
       loadingRooms: "Loading rooms...",
@@ -81,6 +83,8 @@
       reconnect: "Reconectar",
       send: "Enviar",
       emoji: "Emoji",
+      like: "Me gusta",
+      unlike: "Ya no me gusta",
       messagePlaceholder: "Escribe un mensaje...",
       notConnected: "No conectado.",
       loadingRooms: "Cargando salas...",
@@ -134,6 +138,8 @@
       reconnect: "Reconnecter",
       send: "Envoyer",
       emoji: "Emoji",
+      like: "J’aime",
+      unlike: "Je n’aime plus",
       messagePlaceholder: "Écrire un message...",
       notConnected: "Non connecté.",
       loadingRooms: "Chargement des salles...",
@@ -175,6 +181,8 @@
       reconnect: "फिर से कनेक्ट करें",
       send: "भेजें",
       emoji: "इमोजी",
+      like: "पसंद",
+      unlike: "पसंद हटाएँ",
       messagePlaceholder: "संदेश लिखें...",
       notConnected: "कनेक्ट नहीं है।",
       loadingRooms: "कमरे लोड हो रहे हैं...",
@@ -216,6 +224,8 @@
       reconnect: "Riconnetti",
       send: "Invia",
       emoji: "Emoji",
+      like: "Mi piace",
+      unlike: "Non mi piace più",
       messagePlaceholder: "Scrivi un messaggio...",
       notConnected: "Non connesso.",
       loadingRooms: "Caricamento stanze...",
@@ -257,6 +267,8 @@
       reconnect: "再接続",
       send: "送信",
       emoji: "絵文字",
+      like: "いいね",
+      unlike: "いいねを取り消す",
       messagePlaceholder: "メッセージを書く...",
       notConnected: "未接続。",
       loadingRooms: "ルームを読み込み中...",
@@ -298,6 +310,8 @@
       reconnect: "Reconectar",
       send: "Enviar",
       emoji: "Emoji",
+      like: "Curtir",
+      unlike: "Descurtir",
       messagePlaceholder: "Escreva uma mensagem...",
       notConnected: "Não conectado.",
       loadingRooms: "Carregando salas...",
@@ -339,6 +353,8 @@
       reconnect: "重新连接",
       send: "发送",
       emoji: "表情",
+      like: "喜欢",
+      unlike: "取消喜欢",
       messagePlaceholder: "写一条消息...",
       notConnected: "未连接。",
       loadingRooms: "正在加载房间...",
@@ -786,24 +802,115 @@
     });
   }
 
-  function renderMessages() {
+  function applyLikes(likes) {
+    if (!Array.isArray(likes) || !likes.length || !state.messages.length) {
+      return false;
+    }
+    const byId = new Map(state.messages.map((message) => [message.id, message]));
+    let changed = false;
+    for (const row of likes) {
+      const message = byId.get(row.id);
+      if (!message) {
+        continue;
+      }
+      const likeCount = Number(row.likeCount) || 0;
+      const likedByMe = !!row.likedByMe;
+      if (message.likeCount !== likeCount || message.likedByMe !== likedByMe) {
+        message.likeCount = likeCount;
+        message.likedByMe = likedByMe;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  function renderLikeControl(message, own) {
+    const likeCount = Number(message.likeCount) || 0;
+    const liked = !!message.likedByMe;
+    const icon = liked ? "❤️" : "♡";
+    const countHtml = likeCount > 0
+      ? `<span class="message-like-count">${escapeHtml(String(likeCount))}</span>`
+      : "";
+    if (own) {
+      if (likeCount <= 0) {
+        return "";
+      }
+      return `<span class="message-like is-readonly" title="${escapeHtml(String(likeCount))}"><span class="message-like-icon" aria-hidden="true">${icon}</span>${countHtml}</span>`;
+    }
+    const label = liked ? t("unlike") : t("like");
+    return `<button type="button" class="message-like${liked ? " is-liked" : ""}" data-action="like" data-id="${escapeHtml(String(message.id))}" aria-label="${escapeHtml(label)}" aria-pressed="${liked ? "true" : "false"}" title="${escapeHtml(label)}"><span class="message-like-icon" aria-hidden="true">${icon}</span>${countHtml}</button>`;
+  }
+
+  function renderMessages(options = {}) {
+    const preserveScroll = !!options.preserveScroll;
+    const prevTop = els.messages.scrollTop;
+    const prevHeight = els.messages.scrollHeight;
+    const nearBottom = els.messages.scrollHeight - els.messages.scrollTop - els.messages.clientHeight < 48;
+
     els.messages.innerHTML = state.messages.map((message) => {
       const own = message.author === authorName();
       const original = message.translated
         ? `<details><summary>${escapeHtml(t("original", { language: message.sourceLanguage }))}</summary><div class="original-text">${escapeHtml(message.sourceText)}</div></details>`
         : "";
       return `
-        <article class="message${own ? " own" : ""}">
+        <article class="message${own ? " own" : ""}" data-message-id="${escapeHtml(String(message.id))}">
           <div class="message-meta">
             <span class="message-author">${escapeHtml(message.author)}</span>
-            <span data-created-at="${escapeHtml(message.createdAt)}">${escapeHtml(formatMessageTime(message.createdAt))}</span>
+            <span class="message-meta-end">
+              ${renderLikeControl(message, own)}
+              <span data-created-at="${escapeHtml(message.createdAt)}">${escapeHtml(formatMessageTime(message.createdAt))}</span>
+            </span>
           </div>
           <div class="message-text">${escapeHtml(message.displayText)}</div>
           ${original}
         </article>
       `;
     }).join("");
-    els.messages.scrollTop = els.messages.scrollHeight;
+
+    if (preserveScroll) {
+      els.messages.scrollTop = prevTop + (els.messages.scrollHeight - prevHeight);
+    } else if (nearBottom || options.forceBottom) {
+      els.messages.scrollTop = els.messages.scrollHeight;
+    }
+  }
+
+  async function toggleMessageLike(messageId) {
+    const id = Number(messageId);
+    const message = state.messages.find((item) => item.id === id);
+    if (!message || message.author === authorName()) {
+      return;
+    }
+
+    const previous = {
+      likeCount: Number(message.likeCount) || 0,
+      likedByMe: !!message.likedByMe
+    };
+    const nextLiked = !previous.likedByMe;
+    message.likedByMe = nextLiked;
+    message.likeCount = Math.max(0, previous.likeCount + (nextLiked ? 1 : -1));
+    renderMessages({ preserveScroll: true });
+
+    try {
+      const data = await request("/chat/like", {
+        method: "POST",
+        body: JSON.stringify({
+          room: roomName(),
+          messageId: id,
+          userId: state.userId,
+          author: authorName(),
+          language: translateLanguageName()
+        })
+      });
+      checkSession(data);
+      message.likeCount = Number(data.likeCount) || 0;
+      message.likedByMe = !!data.likedByMe;
+      renderMessages({ preserveScroll: true });
+    } catch (error) {
+      message.likeCount = previous.likeCount;
+      message.likedByMe = previous.likedByMe;
+      renderMessages({ preserveScroll: true });
+      handleRuntimeError(error);
+    }
   }
 
   function renderUsers(users) {
@@ -1469,13 +1576,17 @@
           room: roomName(),
           language: translateLanguageName(),
           after: String(state.latestId),
-          limit: "100"
+          limit: "100",
+          userId: state.userId
         });
         const data = await request(`/chat/messages?${params.toString()}`, { method: "GET" });
         checkSession(data);
         const added = mergeMessages(data.messages, { notify: true });
+        const likesChanged = applyLikes(data.likes);
         if (added.length) {
-          renderMessages();
+          renderMessages({ forceBottom: true });
+        } else if (likesChanged) {
+          renderMessages({ preserveScroll: true });
         }
         renderUsers(data.users);
         setStatusKey("connectedTo", { room: roomName() });
@@ -1643,6 +1754,14 @@
     }
   });
   els.fileList.addEventListener("click", onFileClick);
+  els.messages.addEventListener("click", (event) => {
+    const btn = event.target.closest("[data-action='like']");
+    if (!btn || !els.messages.contains(btn)) {
+      return;
+    }
+    event.preventDefault();
+    toggleMessageLike(btn.getAttribute("data-id"));
+  });
   els.filesRefresh.addEventListener("click", () => {
     if (!state.connected) {
       renderFileList();
