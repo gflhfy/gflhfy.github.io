@@ -43,6 +43,7 @@ body {
   grid-template-rows: auto minmax(0, 1fr) auto;
   padding: 10px 14px 14px;
   gap: 10px;
+  position: relative;
 }
 
 .splitter {
@@ -210,10 +211,45 @@ summary {
 }
 
 .composer {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr 96px;
   gap: 10px;
   padding: 12px;
+}
+
+.composer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.composer-actions #send,
+.composer-actions #emoji {
+  width: 100%;
+}
+
+#emoji {
+  min-height: 40px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.emoji-popover {
+  position: absolute;
+  right: 12px;
+  bottom: calc(100% + 8px);
+  z-index: 40;
+  max-width: calc(100% - 24px);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.emoji-popover emoji-picker {
+  width: min(352px, calc(100vw - 48px));
+  height: 360px;
 }
 
 textarea {

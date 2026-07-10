@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>GFL HFY Collab Chat</title>
-    <link rel="stylesheet" href="chat.css?v=20260710b">
+    <link rel="stylesheet" href="chat.css?v=20260710c">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   </head>
   <body>
@@ -49,7 +49,11 @@
 
         <form id="composer" class="composer">
           <textarea id="message" rows="3" maxlength="1000" data-i18n-placeholder="messagePlaceholder" placeholder="Write a message..." disabled></textarea>
-          <button id="send" type="submit" data-i18n="send" disabled>Send</button>
+          <div class="composer-actions">
+            <button id="send" type="submit" data-i18n="send" disabled>Send</button>
+            <button id="emoji" type="button" data-i18n-aria="emoji" title="Emoji" aria-label="Emoji" aria-expanded="false" aria-controls="emoji-popover" disabled>😀</button>
+          </div>
+          <div id="emoji-popover" class="emoji-popover" hidden></div>
         </form>
       </main>
 
@@ -89,6 +93,6 @@
         </section>
       </aside>
     </div>
-    <script src="chat.js?v=20260710b"></script>
+    <script src="chat.js?v=20260710c"></script>
   </body>
 </html>

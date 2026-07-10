@@ -27,6 +27,7 @@
       connect: "Connect",
       reconnect: "Reconnect",
       send: "Send",
+      emoji: "Emoji",
       messagePlaceholder: "Write a message...",
       notConnected: "Not connected.",
       loadingRooms: "Loading rooms...",
@@ -79,6 +80,7 @@
       connect: "Conectar",
       reconnect: "Reconectar",
       send: "Enviar",
+      emoji: "Emoji",
       messagePlaceholder: "Escribe un mensaje...",
       notConnected: "No conectado.",
       loadingRooms: "Cargando salas...",
@@ -131,6 +133,7 @@
       connect: "Connexion",
       reconnect: "Reconnecter",
       send: "Envoyer",
+      emoji: "Emoji",
       messagePlaceholder: "Écrire un message...",
       notConnected: "Non connecté.",
       loadingRooms: "Chargement des salles...",
@@ -171,6 +174,7 @@
       connect: "कनेक्ट करें",
       reconnect: "फिर से कनेक्ट करें",
       send: "भेजें",
+      emoji: "इमोजी",
       messagePlaceholder: "संदेश लिखें...",
       notConnected: "कनेक्ट नहीं है।",
       loadingRooms: "कमरे लोड हो रहे हैं...",
@@ -211,6 +215,7 @@
       connect: "Connetti",
       reconnect: "Riconnetti",
       send: "Invia",
+      emoji: "Emoji",
       messagePlaceholder: "Scrivi un messaggio...",
       notConnected: "Non connesso.",
       loadingRooms: "Caricamento stanze...",
@@ -251,6 +256,7 @@
       connect: "接続",
       reconnect: "再接続",
       send: "送信",
+      emoji: "絵文字",
       messagePlaceholder: "メッセージを書く...",
       notConnected: "未接続。",
       loadingRooms: "ルームを読み込み中...",
@@ -291,6 +297,7 @@
       connect: "Conectar",
       reconnect: "Reconectar",
       send: "Enviar",
+      emoji: "Emoji",
       messagePlaceholder: "Escreva uma mensagem...",
       notConnected: "Não conectado.",
       loadingRooms: "Carregando salas...",
@@ -331,6 +338,7 @@
       connect: "连接",
       reconnect: "重新连接",
       send: "发送",
+      emoji: "表情",
       messagePlaceholder: "写一条消息...",
       notConnected: "未连接。",
       loadingRooms: "正在加载房间...",
@@ -381,6 +389,8 @@
     composer: document.querySelector("#composer"),
     message: document.querySelector("#message"),
     send: document.querySelector("#send"),
+    emoji: document.querySelector("#emoji"),
+    emojiPopover: document.querySelector("#emoji-popover"),
     splitter: document.querySelector("#splitter"),
     filesBrowser: document.querySelector("#files-browser"),
     filesRefresh: document.querySelector("#files-refresh"),
@@ -479,6 +489,111 @@
     }
   }
 
+  function insertEmojiAtCursor(emoji) {
+    const el = els.message;
+    if (!el || el.disabled) {
+      return;
+    }
+    const start = el.selectionStart ?? el.value.length;
+    const end = el.selectionEnd ?? el.value.length;
+    const next = `${el.value.slice(0, start)}${emoji}${el.value.slice(end)}`;
+    if (el.maxLength > 0 && next.length > el.maxLength) {
+      return;
+    }
+    el.value = next;
+    const pos = start + emoji.length;
+    el.focus();
+    el.setSelectionRange(pos, pos);
+  }
+
+  function emojiPickerLocale() {
+    const ui = selectedLanguage().ui;
+    if (ui === "pt-br") {
+      return "pt";
+    }
+    if (ui === "zh") {
+      return "zh-Hans";
+    }
+    return ui || "en";
+  }
+
+  function syncEmojiPickerLocale() {
+    const picker = els.emojiPopover?.querySelector("emoji-picker");
+    if (!picker) {
+      return;
+    }
+    picker.locale = emojiPickerLocale();
+  }
+
+  function syncEmojiPickerTheme() {
+    const picker = els.emojiPopover?.querySelector("emoji-picker");
+    if (!picker) {
+      return;
+    }
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    picker.classList.toggle("dark", dark);
+    picker.classList.toggle("light", !dark);
+  }
+
+  function closeEmojiPicker() {
+    if (!els.emojiPopover) {
+      return;
+    }
+    els.emojiPopover.hidden = true;
+    if (els.emoji) {
+      els.emoji.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  async function ensureEmojiPicker() {
+    if (!els.emojiPopover) {
+      return null;
+    }
+    if (els.emojiPopover.querySelector("emoji-picker")) {
+      syncEmojiPickerLocale();
+      syncEmojiPickerTheme();
+      return els.emojiPopover.querySelector("emoji-picker");
+    }
+    if (!state.emojiPickerLoading) {
+      state.emojiPickerLoading = import("https://cdn.jsdelivr.net/npm/emoji-picker-element@1.29.1/index.js")
+        .then(() => {
+          const picker = document.createElement("emoji-picker");
+          picker.addEventListener("emoji-click", (event) => {
+            const unicode = event.detail?.unicode;
+            if (unicode) {
+              insertEmojiAtCursor(unicode);
+            }
+          });
+          els.emojiPopover.appendChild(picker);
+          syncEmojiPickerLocale();
+          syncEmojiPickerTheme();
+          return picker;
+        })
+        .catch((error) => {
+          state.emojiPickerLoading = null;
+          throw error;
+        });
+    }
+    return state.emojiPickerLoading;
+  }
+
+  async function toggleEmojiPicker() {
+    if (!els.emoji || els.emoji.disabled) {
+      return;
+    }
+    if (els.emojiPopover && !els.emojiPopover.hidden) {
+      closeEmojiPicker();
+      return;
+    }
+    try {
+      await ensureEmojiPicker();
+      els.emojiPopover.hidden = false;
+      els.emoji.setAttribute("aria-expanded", "true");
+    } catch (error) {
+      setStatusRaw(error.message || String(error));
+    }
+  }
+
   function applyUi() {
     document.documentElement.lang = selectedLanguage().ui === "pt-br"
       ? "pt-BR"
@@ -501,6 +616,13 @@
     document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => {
       node.setAttribute("placeholder", t(node.getAttribute("data-i18n-placeholder")));
     });
+
+    document.querySelectorAll("[data-i18n-aria]").forEach((node) => {
+      const label = t(node.getAttribute("data-i18n-aria"));
+      node.setAttribute("aria-label", label);
+      node.setAttribute("title", label);
+    });
+    syncEmojiPickerLocale();
 
     if (state.connected) {
       els.connect.textContent = t("reconnect");
@@ -1132,6 +1254,10 @@
     }
     els.message.disabled = true;
     els.send.disabled = true;
+    if (els.emoji) {
+      els.emoji.disabled = true;
+    }
+    closeEmojiPicker();
     els.connect.textContent = t("connect");
     els.users.textContent = "";
     els.audioPlayer.pause();
@@ -1390,6 +1516,9 @@
     state.sessionVersion = null;
     els.message.disabled = false;
     els.send.disabled = false;
+    if (els.emoji) {
+      els.emoji.disabled = false;
+    }
     els.connect.textContent = t("reconnect");
     setStatusKey("connecting");
     renderMessages();
@@ -1420,12 +1549,16 @@
 
   async function sendMessage(event) {
     event.preventDefault();
+    closeEmojiPicker();
     const text = els.message.value.trim();
     if (!text || !state.connected) {
       return;
     }
 
     els.send.disabled = true;
+    if (els.emoji) {
+      els.emoji.disabled = true;
+    }
     try {
       const data = await request("/chat/send", {
         method: "POST",
@@ -1445,6 +1578,9 @@
     } finally {
       if (state.connected) {
         els.send.disabled = false;
+        if (els.emoji) {
+          els.emoji.disabled = false;
+        }
         els.message.focus();
       }
     }
@@ -1465,6 +1601,27 @@
       if (!els.send.disabled) {
         els.composer.requestSubmit();
       }
+    }
+  });
+  if (els.emoji) {
+    els.emoji.addEventListener("click", (event) => {
+      event.preventDefault();
+      toggleEmojiPicker();
+    });
+  }
+  document.addEventListener("pointerdown", (event) => {
+    if (!els.emojiPopover || els.emojiPopover.hidden) {
+      return;
+    }
+    const target = event.target;
+    if (els.emojiPopover.contains(target) || els.emoji?.contains(target)) {
+      return;
+    }
+    closeEmojiPicker();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeEmojiPicker();
     }
   });
   els.language.addEventListener("change", () => {
