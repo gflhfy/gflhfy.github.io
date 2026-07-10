@@ -188,13 +188,13 @@ textarea:disabled {
   justify-content: flex-end;
   gap: 8px;
   flex: 0 0 auto;
-  min-width: 13.5rem;
+  min-width: 15.5rem;
   white-space: nowrap;
 }
 
 .message-meta-end [data-created-at] {
   display: inline-block;
-  min-width: 9.75rem;
+  min-width: 11.5rem;
   white-space: nowrap;
   text-align: right;
   font-variant-numeric: tabular-nums;
