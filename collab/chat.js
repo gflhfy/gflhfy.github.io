@@ -815,13 +815,30 @@
       }
       const likeCount = Number(row.likeCount) || 0;
       const likedByMe = !!row.likedByMe;
-      if (message.likeCount !== likeCount || message.likedByMe !== likedByMe) {
+      const likedByNames = Array.isArray(row.likedByNames)
+        ? row.likedByNames.map((name) => String(name || "").trim()).filter(Boolean)
+        : [];
+      const namesKey = likedByNames.join("\n");
+      const prevNamesKey = Array.isArray(message.likedByNames) ? message.likedByNames.join("\n") : "";
+      if (message.likeCount !== likeCount || message.likedByMe !== likedByMe || namesKey !== prevNamesKey) {
         message.likeCount = likeCount;
         message.likedByMe = likedByMe;
+        message.likedByNames = likedByNames;
         changed = true;
       }
     }
     return changed;
+  }
+
+  function likeTooltip(message, liked) {
+    const names = Array.isArray(message.likedByNames)
+      ? message.likedByNames.map((name) => String(name || "").trim()).filter(Boolean)
+      : [];
+    const action = liked ? t("unlike") : t("like");
+    if (!names.length) {
+      return action;
+    }
+    return `${action}\n${names.join("\n")}`;
   }
 
   function renderLikeControl(message, own) {
@@ -831,14 +848,15 @@
     const countHtml = likeCount > 0
       ? `<span class="message-like-count">${escapeHtml(String(likeCount))}</span>`
       : "";
+    const tip = escapeHtml(likeTooltip(message, liked));
     if (own) {
       if (likeCount <= 0) {
         return "";
       }
-      return `<span class="message-like is-readonly" title="${escapeHtml(String(likeCount))}"><span class="message-like-icon" aria-hidden="true">${icon}</span>${countHtml}</span>`;
+      return `<span class="message-like is-readonly" title="${tip}"><span class="message-like-icon" aria-hidden="true">${icon}</span>${countHtml}</span>`;
     }
     const label = liked ? t("unlike") : t("like");
-    return `<button type="button" class="message-like${liked ? " is-liked" : ""}" data-action="like" data-id="${escapeHtml(String(message.id))}" aria-label="${escapeHtml(label)}" aria-pressed="${liked ? "true" : "false"}" title="${escapeHtml(label)}"><span class="message-like-icon" aria-hidden="true">${icon}</span>${countHtml}</button>`;
+    return `<button type="button" class="message-like${liked ? " is-liked" : ""}" data-action="like" data-id="${escapeHtml(String(message.id))}" aria-label="${escapeHtml(label)}" aria-pressed="${liked ? "true" : "false"}" title="${tip}"><span class="message-like-icon" aria-hidden="true">${icon}</span>${countHtml}</button>`;
   }
 
   function renderMessages(options = {}) {
@@ -883,11 +901,20 @@
 
     const previous = {
       likeCount: Number(message.likeCount) || 0,
-      likedByMe: !!message.likedByMe
+      likedByMe: !!message.likedByMe,
+      likedByNames: Array.isArray(message.likedByNames) ? message.likedByNames.slice() : []
     };
     const nextLiked = !previous.likedByMe;
+    const myName = authorName();
     message.likedByMe = nextLiked;
     message.likeCount = Math.max(0, previous.likeCount + (nextLiked ? 1 : -1));
+    if (nextLiked) {
+      message.likedByNames = previous.likedByNames.includes(myName)
+        ? previous.likedByNames.slice()
+        : previous.likedByNames.concat(myName);
+    } else {
+      message.likedByNames = previous.likedByNames.filter((name) => name !== myName);
+    }
     renderMessages({ preserveScroll: true });
 
     try {
@@ -904,10 +931,12 @@
       checkSession(data);
       message.likeCount = Number(data.likeCount) || 0;
       message.likedByMe = !!data.likedByMe;
+      message.likedByNames = Array.isArray(data.likedByNames) ? data.likedByNames : [];
       renderMessages({ preserveScroll: true });
     } catch (error) {
       message.likeCount = previous.likeCount;
       message.likedByMe = previous.likedByMe;
+      message.likedByNames = previous.likedByNames;
       renderMessages({ preserveScroll: true });
       handleRuntimeError(error);
     }
