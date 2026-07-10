@@ -3,6 +3,7 @@
   const storageKey = "gflhfy-collab-chat-settings";
   const passwordKey = "gflhfy-collab-chat-password";
   const pollMs = 2500;
+  const timestampRefreshMs = 5 * 60 * 1000;
 
   // Kokoro book languages, with English as a single chat language.
   const LANGUAGES = [
@@ -48,6 +49,7 @@
       filesHeading: "Files",
       refreshFiles: "Refresh",
       back: "Back",
+      yesterday: "Yesterday",
       edit: "Edit",
       preview: "Preview",
       save: "Save",
@@ -100,6 +102,7 @@
       filesHeading: "Archivos",
       refreshFiles: "Actualizar",
       back: "Atrás",
+      yesterday: "Ayer",
       edit: "Editar",
       preview: "Vista previa",
       save: "Guardar",
@@ -152,6 +155,7 @@
       filesHeading: "Fichiers",
       refreshFiles: "Actualiser",
       back: "Retour",
+      yesterday: "Hier",
       tabLogin: "Connexion",
       tabChat: "Chat",
       tabFiles: "Fichiers",
@@ -192,6 +196,7 @@
       filesHeading: "फ़ाइलें",
       refreshFiles: "रीफ़्रेश",
       back: "वापस",
+      yesterday: "कल",
       tabLogin: "लॉगिन",
       tabChat: "चैट",
       tabFiles: "फ़ाइलें",
@@ -232,6 +237,7 @@
       filesHeading: "File",
       refreshFiles: "Aggiorna",
       back: "Indietro",
+      yesterday: "Ieri",
       tabLogin: "Accesso",
       tabChat: "Chat",
       tabFiles: "File",
@@ -272,6 +278,7 @@
       filesHeading: "ファイル",
       refreshFiles: "更新",
       back: "戻る",
+      yesterday: "昨日",
       tabLogin: "ログイン",
       tabChat: "チャット",
       tabFiles: "ファイル",
@@ -312,6 +319,7 @@
       filesHeading: "Arquivos",
       refreshFiles: "Atualizar",
       back: "Voltar",
+      yesterday: "Ontem",
       tabLogin: "Entrar",
       tabChat: "Chat",
       tabFiles: "Arquivos",
@@ -352,6 +360,7 @@
       filesHeading: "文件",
       refreshFiles: "刷新",
       back: "返回",
+      yesterday: "昨天",
       tabLogin: "登录",
       tabChat: "聊天",
       tabFiles: "文件",
@@ -402,6 +411,7 @@
     connected: false,
     latestId: 0,
     timer: null,
+    timestampTimer: null,
     pollInFlight: null,
     userId: getUserId(),
     messages: [],
@@ -616,12 +626,50 @@
       .replaceAll("'", "&#039;");
   }
 
-  function formatTime(value) {
+  function startOfLocalDay(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+
+  function formatClock(date) {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  function formatMessageTime(value) {
     try {
-      return new Date(value).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return "";
+      }
+      const now = new Date();
+      const dayMs = 24 * 60 * 60 * 1000;
+      const diffDays = Math.round(
+        (startOfLocalDay(now).getTime() - startOfLocalDay(date).getTime()) / dayMs
+      );
+      const clock = formatClock(date);
+      if (diffDays === 0) {
+        return clock;
+      }
+      if (diffDays === 1) {
+        return `${t("yesterday")} ${clock}`;
+      }
+      const sameYear = date.getFullYear() === now.getFullYear();
+      const day = date.toLocaleDateString([], sameYear
+        ? { month: "short", day: "numeric" }
+        : { month: "short", day: "numeric", year: "numeric" });
+      return `${day}, ${clock}`;
     } catch {
       return "";
     }
+  }
+
+  function refreshMessageTimes() {
+    els.messages.querySelectorAll("[data-created-at]").forEach((node) => {
+      const stamp = node.getAttribute("data-created-at");
+      if (!stamp) {
+        return;
+      }
+      node.textContent = formatMessageTime(stamp);
+    });
   }
 
   function renderMessages() {
@@ -637,7 +685,7 @@
         <article class="message${own ? " own" : ""}">
           <div class="message-meta">
             <span class="message-author">${escapeHtml(message.author)}</span>
-            <span>${escapeHtml(formatTime(message.createdAt))}</span>
+            <span data-created-at="${escapeHtml(message.createdAt)}">${escapeHtml(formatMessageTime(message.createdAt))}</span>
           </div>
           <div class="message-text">${escapeHtml(message.displayText)}</div>
           ${note}
@@ -1090,6 +1138,10 @@
       window.clearInterval(state.timer);
       state.timer = null;
     }
+    if (state.timestampTimer) {
+      window.clearInterval(state.timestampTimer);
+      state.timestampTimer = null;
+    }
     els.message.disabled = true;
     els.send.disabled = true;
     els.connect.textContent = t("connect");
@@ -1357,6 +1409,9 @@
     if (state.timer) {
       window.clearInterval(state.timer);
     }
+    if (state.timestampTimer) {
+      window.clearInterval(state.timestampTimer);
+    }
 
     try {
       await sendPresence();
@@ -1369,6 +1424,7 @@
         sendPresence().catch(handleRuntimeError);
         poll();
       }, pollMs);
+      state.timestampTimer = window.setInterval(refreshMessageTimes, timestampRefreshMs);
     } catch (error) {
       disconnect(error.message);
     }
